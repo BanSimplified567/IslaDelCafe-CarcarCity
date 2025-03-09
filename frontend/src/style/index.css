@@ -1,0 +1,176 @@
+.index-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  width: 100%;
+  z-index: 10;
+}
+
+.index-mobile-menu-toggle {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .index-mobile-menu-toggle {
+    display: none;
+  }
+}
+
+.index-mobile-menu-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.index-nav {
+  position: absolute;
+  top: 4rem;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  transition: all 0.3s ease;
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .index-nav {
+    position: static;
+    width: auto;
+    background-color: transparent;
+    box-shadow: none;
+    display: flex;
+    padding: 0;
+    transition: none;
+  }
+}
+
+.index-nav-open {
+  display: block;
+}
+
+.index-nav-closed {
+  display: none;
+}
+
+.index-nav-list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (min-width: 768px) {
+  .index-nav-list {
+    flex-direction: row;
+    gap: 1.5rem;
+  }
+}
+
+.index-nav-list-item {
+  list-style: none;
+}
+
+.index-search-signin {
+  display: none;
+  align-items: center;
+  gap: 1rem;
+}
+
+@media (min-width: 768px) {
+  .index-search-signin {
+    display: flex;
+  }
+}
+
+.index-search-icon {
+  display: flex;
+}
+
+.index-search-svg {
+  height: 1.5rem;
+  width: 1.5rem;
+}
+
+.index-signin-button {
+  background-color: #a0522d;
+  color: white;
+  font-weight: bold;
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  transition: background-color 0.3s ease;
+}
+
+.index-signin-button:hover {
+  background-color: #8b4513;
+}
+
+.index-hero-section {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-coffee-primary)
+}
+
+@media (min-width: 768px) {
+  .index-hero-section {
+    flex-direction: row;
+  }
+}
+
+.index-hero-content-left {
+  flex: 1;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+@media (min-width: 768px) {
+  .index-hero-content-left {
+    text-align: left;
+  }
+}
+
+.index-IslaDelCafe-Title {
+  font-size: 3.75rem;
+  font-weight: bold;
+}
+
+@media (min-width: 768px) {
+  .index-IslaDelCafe-Title {
+    font-size: 5.625rem;
+  }
+}
+
+.index-hero-paragraph {
+  margin-top: 1rem;
+  font-size: 1rem;
+}
+
+@media (min-width: 768px) {
+  .index-hero-paragraph {
+    font-size: 1.125rem;
+  }
+}
+
+.index-hero-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2rem;
+}
+
+@media (min-width: 640px) {
+  .index-hero-buttons {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+.index-order-button {
+  background-color: white;
+}

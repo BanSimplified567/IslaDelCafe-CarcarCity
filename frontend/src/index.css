@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Clicker+Script&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Clicker+Script&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+@import "tailwindcss";
+
+
+:root {
+  /* === Color Palette === */
+  --color-coffee-primary: #6F4E37;
+  --color-coffee-secondary: #A67B5B;
+  --color-coffee-third: #ECB176;
+  --color-coffee-fourth: #FED8B1;
+
+  --font-clickerScript: "Clicker Script",
+    cursive;
+  --font-playfairDisplay: "Playfair Display",
+    serif;
+}
+
+/* Index.jsx */
+.index-container{
+  
+}
+
+.index-IslaDelCafe-Logo-title {
+  font-family: var(--font-clickerScript);
+  font-size: 2rem;
+}
+
+.index-IslaDelCafe-Title {
+  font-family: var(--font-playfairDisplay);
+}
