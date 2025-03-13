@@ -1,16 +1,34 @@
-import { Menu, X } from 'lucide-react';
-import { useState } from 'react';
-import IslaDelCafe from '../assets/IslaDelCafe.png';
-import Footer from '../components/Footer';
-import NavLink from '../components/Navbar';
-import '../style/index.css';
+import { Menu, ShoppingCart, User, X } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { NavLink } from 'react-router-dom';
+import '../style/NavbarMain.css';
 
-function Index() {
+function NavbarMain() {
    const [menuOpen, setMenuOpen] = useState(false);
+   const [isLoggedIn, setIsLoggedIn] = useState(true);
+   const [isScrolled, setIsScrolled] = useState(false);
+
+   // Handle scroll event to change header transparency
+   useEffect(() => {
+      const handleScroll = () => {
+         if (window.scrollY > 50) {
+            setIsScrolled(true);
+         } else {
+            setIsScrolled(false);
+         }
+      };
+
+      window.addEventListener('scroll', handleScroll);
+
+      // Clean up event listener on component unmount
+      return () => {
+         window.removeEventListener('scroll', handleScroll);
+      };
+   }, []);
 
    return (
       <>
-         <header className="index-header">
+         <header className={`index-header ${isScrolled ? 'index-header-scrolled' : ''}`}>
             <div className="index-IslaDelCafe-Logo-title">IslaDelCafe</div>
 
             {/* Mobile Menu Toggle */}
@@ -40,7 +58,7 @@ function Index() {
                </ul>
             </nav>
 
-            {/* Search & Sign In */}
+            {/* Search & Sign In / User Account Section */}
             <div className="index-search-signin">
                <div className="index-search-icon">
                   <svg
@@ -58,39 +76,23 @@ function Index() {
                      />
                   </svg>
                </div>
-               <button className="index-signin-button">Sign In</button>
+
+               {isLoggedIn ? (
+                  <div className="index-user-actions">
+                     <NavLink to="/cart" className="index-icon-button">
+                        <ShoppingCart className="index-icon" />
+                     </NavLink>
+                     <NavLink to="/" className="index-icon-button">
+                        <User className="index-icon" />
+                     </NavLink>
+                  </div>
+               ) : (
+                  <button className="index-signin-button">Sign In</button>
+               )}
             </div>
          </header>
-         <section className="index-container">
-            <div className="index-container-title">
-               <h1>
-                  Welcome To 
-               </h1>
-            </div>
-         </section>
-         <section
-            className="index-hero-section"
-         >
-            <div className="index-hero-content-left">
-               <h1 className="index-IslaDelCafe-Title">IslaDelCafe</h1>
-               <p className="index-hero-paragraph">
-                  Bean Scene is a coffee shop that provides you with quality coffee that helps boost
-                  your productivity and helps build your mood. Having a cup of coffee is good, but
-                  having a cup of real coffee is greater. There is no doubt that you will enjoy this
-                  coffee more than others you have ever tasted.
-               </p>
-               <div className="index-hero-buttons">
-                  <button className="index-order-button">Order Now</button>
-                  <button className="index-learn-button">Learn More</button>
-               </div>
-            </div>
-            <div className="index-hero-content-right">
-               <img src={IslaDelCafe} alt="IslaDelCafe" className="index-hero-image" />
-            </div>
-         </section>
-         <Footer />
       </>
    );
 }
 
-export default Index;
+export default NavbarMain;
