@@ -9,6 +9,15 @@
   --font-opensans: "Open Sans",
     sans-serif;
 
+  --font-xxl: clamp(6rem, 2.5vw + 1rem, 5rem);
+    --font-x-large: clamp(4rem, 2vw + 1rem, 4rem);
+    --font-large: clamp(2rem, 3vw + 1rem, 4rem);
+    --font-medium: clamp(1.5rem, 2vw + 1.2rem, 3rem);
+    --font-small: clamp(1.2rem, 1rem + 1.5vw, 2.5rem);
+    --font-x-small: clamp(0.5rem, 0.87rem + 0.5vw, 1rem);
+
+
+
   --primary: #ff6b35;
   --secondary: #2ec4b6;
   --dark: #000;
@@ -27,12 +36,6 @@
   --color-third: #ECB176;
   --color-fourth: #FED8B1;
 
-  --font-xxl: clamp(6rem, 2.5vw + 1rem, 5rem);
-  --font-x-large: clamp(4rem, 2vw + 1rem, 4rem);
-  --font-large: clamp(2rem, 3vw + 1rem, 4rem);
-  --font-medium: clamp(1.5rem, 2vw + 1.2rem, 3rem);
-  --font-small: clamp(1.2rem, 1rem + 1.5vw, 2.5rem);
-  --font-x-small: clamp(0.5rem, 0.87rem + 0.5vw, 1rem);
 
 
   /* === Line Heights === */
@@ -62,6 +65,13 @@ body {
   font-family: var(--font-opensans);
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+  /* Maintains aspect ratio */
+  display: block;
+  /* Avoids extra spacing below inline images */
+}
 
 .index-section-header {
   position: relative;
@@ -208,7 +218,7 @@ body {
 }
 
 .index-container-bestseller h1 {
-  font-family: var(--font-opensans);
+  font-family: var(--font-playfairDisplay);
   font-size: var(--font-large);
   font-weight: 900;
 
@@ -287,9 +297,8 @@ body {
 
 
 .index-article-shop {
-  color: var(--grey);
   background-color: var(--color-primary);
-  padding: 5rem;
+  padding: 2rem;
 }
 
 @media screen and (max-width: 768px) {
@@ -301,37 +310,43 @@ body {
 
 .index-article-header {
   display: flex;
-  gap: 2rem;
-  padding: 2rem;
+  gap: 1rem;
+  padding: 3rem;
   align-items: center;
   flex-direction: column;
   text-align: center;
   color: var(--light);
 }
 
-.index-article-shop h1 {
+
+.index-article-header h1 {
   font-size: var(--font-xxl);
   line-height: var(--line-height-hero);
   font-weight: 900;
-
 }
 
 .index-article-shop h3 {
   font-weight: 500;
 }
 
+.index-article-header button {
+  padding: .5rem 5rem;
+}
+
 .index-article-shop button {
   background: var(--color-secondary);
-  padding: 1rem;
   border-radius: 10rem;
-  color: var(--light);
+  transition: background-color 0.2s;
 }
 
 .index-isladelcafe-coffees {
   background-color: var(--light);
   min-height: 100dvh;
+  max-width: 90%;
   display: flex;
   flex-direction: column;
+  margin: 0 auto;
+  align-items: center;
   justify-content: space-around;
   border-radius: 5rem;
 }
@@ -345,13 +360,25 @@ body {
 
 @media screen and (max-width: 768px) {
   .index-isladelcafe-section {
+    justify-content: start;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .index-isladelcafe-section {
     flex-wrap: wrap;
   }
 }
 
 .index-coffees-header {
-  flex: 2;
+  flex: 1;
   max-width: 50%;
+}
+
+.index-coffees-header h1 {
+  color: var(--color-secondary);
+  font-size: var(--font-x-large);
+  font-weight: 800;
 }
 
 .index-coffees-options {
@@ -378,13 +405,14 @@ body {
   margin: 2rem;
   border-radius: 0.5rem;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  max-width: 56rem;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: 100%;
+
 }
 
 .index-menu-title {
-  font-size: 2.25rem;
+  font-size: var(--font-x-large);
+  font-family: var(--font-playfairDisplay);
+  color: var(--light);
   font-weight: 700;
   margin-bottom: 2rem;
 }
@@ -428,7 +456,7 @@ body {
 .index-menu-product-name {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #78350f;
+  color: var(--color-primary);
 }
 
 .index-menu-product-details {
@@ -446,20 +474,20 @@ body {
 .index-menu-price {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #b45309;
+  color: var(--color-text-orange);
 }
 
 .index-menu-original-price {
   font-size: 0.875rem;
   text-decoration: line-through;
   margin-left: 0.5rem;
-  color: #6b7280;
+  color: var(--grey);
 }
 
 .index-menu-category {
   padding: 0.25rem 0.5rem;
-  background-color: #fef3c7;
-  color: #92400e;
+  background-color: var(--color-third);
+  color: var(--light);
   font-size: 0.75rem;
   border-radius: 9999px;
 }
@@ -484,39 +512,44 @@ body {
 }
 
 .index-menu-dot-active {
-  background-color: #b45309;
+  background-color: var(--light);
 }
 
 .index-menu-slide-info {
   text-align: center;
-  color: #92400e;
   font-weight: 500;
 }
 
 .index-menu-navigation {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   width: 100%;
   margin-top: 1.5rem;
 }
 
+@media screen and (max-width: 481px) {
+  .index-menu-navigation {
+    width: auto;
+  }
+}
+
 /* Navigation button base styles */
 .index-menu-button {
-  padding: 0.5rem 1rem;
-  /* px-4 py-2 */
-  background-color: #d97706;
+  padding: .5rem 4rem;
   /* bg-amber-600 */
-  color: white;
   border-radius: 0.5rem;
   /* rounded-lg */
-  border: none;
+  border: solid 1px var(--light);
   cursor: pointer;
   transition: background-color 0.2s;
   /* transition-colors */
 }
 
+
 .index-menu-button:hover {
-  background-color: #b45309;
+  background-color: var(--light);
+  color: var(--color-secondary);
+  font-weight: 700;
   /* hover:bg-amber-700 */
 }
 
@@ -525,5 +558,129 @@ body {
   .index-menu-grid {
     grid-template-columns: 1fr;
     /* Switch to single column on small screens */
+  }
+}
+
+.index-about-isladelcafe {
+  background-color: var(--light);
+  color: var(--dark);
+
+}
+
+.index-about-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 2rem 5rem;
+
+}
+
+.index-about-header img {
+  width: 10rem;
+}
+
+.index-about-span {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  text-align: end;
+}
+
+.index-about-span h1 {
+  font-size: var(--font-x-large);
+  font-family: var(--font-playfairDisplay);
+  font-weight: 900;
+}
+.index-about-span h3{
+  font-size: var(--font-medium);
+  font-family: var(--font-playfairDisplay);
+}
+
+
+.index-about-gallery {
+  display: flex;
+  justify-content: center;
+  /* Center the content horizontally */
+  align-items: center;
+  /* Center the content vertically */
+  height: 30rem;
+  /* Set a fixed height - adjust as needed */
+  max-height: 60vh;
+  /* Limit the maximum height relative to viewport */
+  gap: 1rem;
+  margin: 2rem auto;
+  /* Add margin for better spacing */
+}
+
+.index-about-container-left {
+  flex: 1;
+  max-width: 35%;
+  /* Reduced slightly from 40% */
+  height: 100%;
+  /* Ensure full height */
+}
+
+.index-about-container-right {
+  flex: 2;
+  max-width: 55%;
+  /* Reduced slightly from 60% */
+  height: 100%;
+  /* Ensure full height */
+}
+
+.index-about-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: 60% 40%;
+  /* Better defined row heights */
+  gap: 10px;
+  height: 100%;
+}
+
+.index-about-item {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* Layout based on UI */
+.item1 {
+  grid-column: span 2;
+  /* Stretches across two columns */
+}
+
+.item2,
+.item3 {
+  /* No specific height needed, grid handles it */
+}
+
+.index-about-gallery .item4 {
+  height: 100%;
+  width: 100%;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .index-about-gallery {
+    flex-direction: column;
+    height: auto;
+    /* Allow dynamic height on mobile */
+    max-height: none;
+  }
+
+  .index-about-container-left,
+  .index-about-container-right {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .index-about-grid {
+    grid-template-rows: auto auto auto;
+    /* Auto height for grid items */
+  }
+
+  .index-about-gallery .item4 {
+    height: 300px;
+    /* More modest height on mobile */
   }
 }
