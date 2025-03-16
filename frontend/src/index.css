@@ -10,18 +10,18 @@
     sans-serif;
 
   --font-xxl: clamp(6rem, 2.5vw + 1rem, 5rem);
-    --font-x-large: clamp(4rem, 2vw + 1rem, 4rem);
-    --font-large: clamp(2rem, 3vw + 1rem, 4rem);
-    --font-medium: clamp(1.5rem, 2vw + 1.2rem, 3rem);
-    --font-small: clamp(1.2rem, 1rem + 1.5vw, 2.5rem);
-    --font-x-small: clamp(0.5rem, 0.87rem + 0.5vw, 1rem);
+  --font-x-large: clamp(4rem, 2vw + 1rem, 4rem);
+  --font-large: clamp(2rem, 3vw + 1rem, 4rem);
+  --font-medium: clamp(1.5rem, 2vw + 1.2rem, 3rem);
+  --font-small: clamp(1.2rem, 1rem + 1.5vw, 2.5rem);
+  --font-x-small: clamp(0.5rem, 0.87rem + 0.5vw, 1rem);
 
 
 
   --primary: #ff6b35;
   --secondary: #2ec4b6;
   --dark: #000;
-  --light: white;
+  --light: #fffafe;
   --grey: #E5DCD3;
   --success: #57cc99;
   --warning: #ffd166;
@@ -61,7 +61,6 @@ html {
 
 body {
   font-size: 100%;
-  color: var(--light);
   font-family: var(--font-opensans);
 }
 
@@ -79,6 +78,7 @@ img {
   justify-content: space-evenly;
   align-items: center;
   background: url('./assets/IslaDelCafeShop.jpg') center/cover no-repeat;
+  color: var(--light);
   padding: 2rem 0;
   z-index: 1;
 }
@@ -106,6 +106,7 @@ img {
 .index-section-title h1 {
   display: flex;
   line-height: var(--line-height-hero);
+  font-family: var(--font-opensans);
   flex-direction: column;
   font-weight: 900;
   font-size: var(--font-x-large);
@@ -341,7 +342,6 @@ img {
 
 .index-isladelcafe-coffees {
   background-color: var(--light);
-  min-height: 100dvh;
   max-width: 90%;
   display: flex;
   flex-direction: column;
@@ -401,6 +401,7 @@ img {
   flex-direction: column;
   align-items: center;
   background-color: var(--color-secondary);
+  color: var(--light);
   padding: 2rem;
   margin: 2rem;
   border-radius: 0.5rem;
@@ -564,35 +565,58 @@ img {
 .index-about-isladelcafe {
   background-color: var(--light);
   color: var(--dark);
-
 }
 
 .index-about-header {
   display: flex;
   justify-content: space-between;
   padding: 2rem 5rem;
+  font-family: var(--font-playfairDisplay);
+}
 
+@media screen and (min-width: 1200px) {
+  .index-about-header {
+    max-width: 80%;
+    margin: 0 auto;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .index-about-header {
+    flex-wrap: wrap;
+    text-align: center;
+  }
 }
 
 .index-about-header img {
-  width: 10rem;
+  width: 20rem;
+  height: 20rem;
+  object-fit: contain;
+
 }
 
 .index-about-span {
   display: flex;
+  justify-content: center;
   flex: 1;
   flex-direction: column;
   text-align: end;
 }
 
+@media screen and (max-width: 768px) {
+  .index-about-span {
+    text-align: center;
+
+  }
+}
+
 .index-about-span h1 {
   font-size: var(--font-x-large);
-  font-family: var(--font-playfairDisplay);
   font-weight: 900;
 }
-.index-about-span h3{
+
+.index-about-span h3 {
   font-size: var(--font-medium);
-  font-family: var(--font-playfairDisplay);
 }
 
 
@@ -604,7 +628,8 @@ img {
   /* Center the content vertically */
   height: 30rem;
   /* Set a fixed height - adjust as needed */
-  max-height: 60vh;
+  max-height: 30dvh;
+  max-width: 80%;
   /* Limit the maximum height relative to viewport */
   gap: 1rem;
   margin: 2rem auto;
@@ -649,14 +674,10 @@ img {
   /* Stretches across two columns */
 }
 
-.item2,
-.item3 {
-  /* No specific height needed, grid handles it */
-}
-
 .index-about-gallery .item4 {
   height: 100%;
   width: 100%;
+
 }
 
 /* Responsive adjustments */
@@ -682,5 +703,279 @@ img {
   .index-about-gallery .item4 {
     height: 300px;
     /* More modest height on mobile */
+    width: 20rem;
+  }
+}
+
+/* index-Customer */
+/* Main container */
+.index-customer-container {
+  width: 100%;
+  max-width: 60rem;
+  margin: 0 auto;
+  color: var(--color-primary);
+}
+
+/* Header styles */
+.index-customer-header {
+  margin-bottom: 48px;
+  font-family: var(--font-playfairDisplay)
+}
+
+.index-customer-header h1 {
+  font-size: var(--font-xxl);
+  line-height: var(--line-height-hero);
+  font-weight: 900;
+  margin-bottom: 8px;
+}
+
+.index-customer-header h3 {
+  font-size: var(--font-large);
+}
+
+/* Carousel wrapper */
+.index-customer-wrapper {
+  position: relative;
+  background: var(--color-secondary);
+  padding: 2rem;
+  border-radius: 1rem;
+}
+
+/* Carousel container */
+.index-customer-carousel {
+  overflow: hidden;
+}
+
+/* Slides container */
+.index-customer-slides {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+}
+
+/* Individual slide */
+.index-customer-item {
+  width: 100%;
+  max-width: 50%;
+  flex-shrink: 0;
+  padding: 0 16px;
+}
+
+/* Card styling */
+.index-customer-card {
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  background: var(--light);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+/* Profile section */
+.index-customer-profile {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Profile image */
+.index-customer-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Customer name */
+.index-customer-name {
+  margin-top: var(--font-x-small);
+  font-weight: 500;
+  font-size: 18px;
+  color: var(--dark);
+}
+
+/* Content section */
+.index-customer-content {
+  flex: 1;
+}
+
+/* Testimonial text */
+.index-customer-text {
+  font-size: var(--font-x-small);
+  line-height: var(--line-height-normal);
+}
+
+/* Navigation dots container */
+.index-customer-navigation {
+  display: flex;
+  justify-content: center;
+  margin-top: 32px;
+  gap: 8px;
+}
+
+/* Individual dot */
+.index-customer-dot {
+  height: 12px;
+  width: 12px;
+  border-radius: 50%;
+  background-color: #cccccc;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+/* Active dot */
+.index-customer-dot.active {
+  background-color: #3b82f6;
+  width: 24px;
+}
+
+/* Media query for responsive layout */
+@media (min-width: 768px) {
+  .index-customer-card {
+    flex-direction: row;
+  }
+}
+
+
+/* Index-ContactUS */
+/* Main container */
+.index-contactUs-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 2rem;
+  padding: 2rem;
+}
+
+/* Location container */
+.index-contactUs-location {
+  flex: 1;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(111, 78, 55, 0.2);
+  overflow: hidden;
+}
+
+.index-contactUs-location-header {
+  padding: 1rem;
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.index-contactUs-location-content {
+  padding: 1.5rem;
+}
+
+.index-contactUs-location-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--color-primary);
+}
+
+.index-contactUs-location-address {
+  color: var(--color-secondary);
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.index-contactUs-location-map {
+  width: 100%;
+  height: 16rem;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Form container */
+.index-contactUs-form {
+  flex: 1;
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(111, 78, 55, 0.2);
+  overflow: hidden;
+}
+
+.index-contactUs-form-header {
+  padding: 1rem;
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: bold;
+  font-size: 1.25rem;
+}
+
+.index-contactUs-form-content {
+  padding: 1.5rem;
+}
+
+.index-contactUs-form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.index-contactUs-form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.index-contactUs-form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-primary);
+  margin-bottom: 0.25rem;
+}
+
+.index-contactUs-form-input,
+.index-contactUs-form-textarea {
+  width: 100%;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--color-third);
+  border-radius: 6px;
+  font-size: 1rem;
+}
+
+.index-contactUs-form-input:focus,
+.index-contactUs-form-textarea:focus {
+  outline: none;
+  border-color: var(--color-secondary);
+  box-shadow: 0 0 0 2px rgba(166, 123, 91, 0.2);
+}
+
+.index-contactUs-form-textarea {
+  resize: vertical;
+  min-height: 8rem;
+}
+
+.index-contactUs-form-button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-primary);
+  color: white;
+  font-weight: 500;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.index-contactUs-form-button:hover {
+  background-color: var(--color-secondary);
+}
+
+/* Media query for larger screens */
+@media (min-width: 768px) {
+  .index-contactUs-container {
+    flex-direction: row;
+  }
+
+  .index-contactUs-location,
+  .index-contactUs-form {
+    width: 50%;
   }
 }

@@ -1,9 +1,13 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { products } from '../../components/Products';
+import '../../style/Menu.css';
+
 function Menu() {
    const [selectedCategory, setSelectedCategory] = useState('all');
    const [sortBy, setSortBy] = useState('popular');
+   const [currentPage, setCurrentPage] = useState(1);
+   const itemsPerPage = 8; // Number of items to show per page
 
    // Filter products by category
    const filteredProducts =
@@ -11,29 +15,88 @@ function Menu() {
          ? products
          : products.filter((product) => product.category === selectedCategory);
 
+   // Sort products based on selection
+   const sortedProducts = [...filteredProducts].sort((a, b) => {
+      if (sortBy === 'price-low') return a.price - b.price;
+      if (sortBy === 'price-high') return b.price - a.price;
+      if (sortBy === 'newest') return b.id - a.id;
+      // Default: popular (by id)
+      return a.id - b.id;
+   });
+
+   // Calculate pagination
+   const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
+   const startIndex = (currentPage - 1) * itemsPerPage;
+   const endIndex = startIndex + itemsPerPage;
+   const currentProducts = sortedProducts.slice(startIndex, endIndex);
+
+   // Handle page navigation
+   const handlePrevPage = () => {
+      if (currentPage > 1) {
+         setCurrentPage(currentPage - 1);
+      }
+   };
+
+   const handleNextPage = () => {
+      if (currentPage < totalPages) {
+         setCurrentPage(currentPage + 1);
+      }
+   };
+
+   // Function to render star ratings
+   const renderStarRating = (rating) => {
+      const fullStars = Math.floor(rating);
+      const hasHalfStar = rating % 1 >= 0.5;
+      const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+
+      return (
+         <div className="menu-container-rating-stars">
+            {/* Full stars */}
+            {[...Array(fullStars)].map((_, i) => (
+               <span key={`full-${i}`} className="menu-container-star-full">
+                  ★
+               </span>
+            ))}
+
+            {/* Half star if needed */}
+            {hasHalfStar && <span className="menu-container-star-half">★</span>}
+
+            {/* Empty stars */}
+            {[...Array(emptyStars)].map((_, i) => (
+               <span key={`empty-${i}`} className="menu-container-star-empty">
+                  ☆
+               </span>
+            ))}
+         </div>
+      );
+   };
+
    return (
-      <div className="container mx-auto px-4 py-8">
-         <header className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-800 mb-2">Coffee Shop Menu</h1>
-            <p className="text-gray-600">
+      <div className="menu-container-main">
+         <header className="menu-container-header">
+            <h1 className="menu-container-title">Coffee Shop Menu</h1>
+            <p className="menu-container-subtitle">
                Indulge in our handcrafted coffee and refreshing beverages
             </p>
          </header>
 
-         <div className="flex flex-col md:flex-row gap-8">
+         <div className="menu-container-layout">
             {/* Sidebar/Filters */}
-            <aside className="w-full md:w-64 flex-shrink-0">
-               <div className="bg-gray-100 rounded-lg p-6">
-                  <h2 className="text-xl font-bold text-gray-800 mb-4">Categories</h2>
-                  <ul className="space-y-2">
+            <aside className="menu-container-sidebar">
+               <div className="menu-container-filter-box">
+                  <h2 className="menu-container-category-title">Categories</h2>
+                  <ul className="menu-container-category-list">
                      {['all', 'coffee', 'matcha', 'milk', 'juice', 'hot'].map((category) => (
-                        <li key={category}>
+                        <li key={category} className="menu-container-category-item">
                            <button
-                              onClick={() => setSelectedCategory(category)}
-                              className={`w-full text-left py-2 px-4 rounded ${
+                              onClick={() => {
+                                 setSelectedCategory(category);
+                                 setCurrentPage(1); // Reset to first page when changing category
+                              }}
+                              className={`menu-container-category-button ${
                                  selectedCategory === category
-                                    ? 'bg-amber-600 text-white'
-                                    : 'hover:bg-gray-200'
+                                    ? 'menu-container-category-active'
+                                    : 'menu-container-category-inactive'
                               }`}
                            >
                               {category === 'all'
@@ -52,53 +115,56 @@ function Menu() {
                      ))}
                   </ul>
 
-                  <div className="mt-8">
-                     <h2 className="text-xl font-bold text-gray-800 mb-4">Price Range</h2>
-                     <div className="space-y-2">
-                        <div>
-                           <label htmlFor="min-price" className="block text-gray-600 mb-1">
+                  <div className="menu-container-price-filter">
+                     <h2 className="menu-container-price-title">Price Range</h2>
+                     <div className="menu-container-price-inputs">
+                        <div className="menu-container-price-field">
+                           <label htmlFor="min-price" className="menu-container-price-label">
                               Min Price
                            </label>
                            <input
                               type="number"
                               id="min-price"
-                              className="w-full p-2 border rounded"
+                              className="menu-container-price-input"
                               placeholder="₱0"
                            />
                         </div>
-                        <div>
-                           <label htmlFor="max-price" className="block text-gray-600 mb-1">
+                        <div className="menu-container-price-field">
+                           <label htmlFor="max-price" className="menu-container-price-label">
                               Max Price
                            </label>
                            <input
                               type="number"
                               id="max-price"
-                              className="w-full p-2 border rounded"
+                              className="menu-container-price-input"
                               placeholder="₱100"
                            />
                         </div>
-                        <button className="w-full bg-amber-800 text-white py-2 px-4 rounded hover:bg-amber-700">
-                           Apply Filter
-                        </button>
+                        <button className="menu-container-price-apply">Apply Filter</button>
                      </div>
                   </div>
                </div>
             </aside>
 
             {/* Main content */}
-            <div className="flex-grow">
+            <div className="menu-container-content">
                {/* Sort options */}
-               <div className="flex justify-between items-center mb-6">
-                  <p className="text-gray-600">{filteredProducts.length} drinks found</p>
-                  <div className="flex items-center">
-                     <label htmlFor="sort" className="mr-2 text-gray-600">
+               <div className="menu-container-sort-bar">
+                  <p className="menu-container-results-count">
+                     {sortedProducts.length} drinks found
+                  </p>
+                  <div className="menu-container-sort-controls">
+                     <label htmlFor="sort" className="menu-container-sort-label">
                         Sort by:
                      </label>
                      <select
                         id="sort"
                         value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value)}
-                        className="p-2 border rounded"
+                        onChange={(e) => {
+                           setSortBy(e.target.value);
+                           setCurrentPage(1); // Reset to first page when changing sort
+                        }}
+                        className="menu-container-sort-select"
                      >
                         <option value="popular">Most Popular</option>
                         <option value="price-low">Price: Low to High</option>
@@ -109,39 +175,46 @@ function Menu() {
                </div>
 
                {/* Products grid */}
-               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredProducts.map((product) => (
-                     <div
-                        key={product.id}
-                        className="border rounded-lg overflow-hidden hover:shadow-lg transition"
-                     >
-                        <div className="bg-amber-100 h-48 flex items-center justify-center text-amber-800 font-bold">
-                           {/* Placeholder for image */}
-                           {product.name}
+               <div className="menu-container-products-grid">
+                  {currentProducts.map((product) => (
+                     <div key={product.id} className="menu-container-product-card">
+                        <div className="menu-container-product-image">
+                           <img
+                              src={product.image}
+                              alt={product.name}
+                              className="menu-container-product-img"
+                           />
                         </div>
-                        <div className="p-4">
-                           <h3 className="font-bold text-gray-800 mb-1">{product.name}</h3>
-                           <div className="flex items-center mb-2">
-                              <p className="text-amber-600 font-medium">
+                        <div className="menu-container-product-details">
+                           <h3 className="menu-container-product-name">{product.name}</h3>
+
+                           {/* Rating display */}
+                           <div className="menu-container-product-rating">
+                              {renderStarRating(product.rating)}
+                              <span className="menu-container-rating-text">
+                                 {product.rating.toFixed(1)} ({product.reviewCount} reviews)
+                              </span>
+                           </div>
+
+                           <div className="menu-container-product-pricing">
+                              <p className="menu-container-product-price">
                                  ₱{product.price.toFixed(2)}
                               </p>
-                              <p className="text-gray-500 text-sm line-through ml-2">
+                              <p className="menu-container-product-original-price">
                                  ₱{product.originalPrice.toFixed(2)}
                               </p>
                            </div>
-                           <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                           <p className="menu-container-product-description">
                               {product.description}
                            </p>
-                           <div className="flex space-x-2">
+                           <div className="menu-container-product-actions">
                               <Link
                                  to={`/product/${product.id}`}
-                                 className="bg-amber-600 text-white py-1 px-3 rounded text-sm hover:bg-amber-700"
+                                 className="menu-container-view-button"
                               >
                                  View Details
                               </Link>
-                              <button className="bg-amber-800 text-white py-1 px-3 rounded text-sm hover:bg-amber-900">
-                                 Add to Cart
-                              </button>
+                              <button className="menu-container-add-button">Add to Cart</button>
                            </div>
                         </div>
                      </div>
@@ -149,22 +222,35 @@ function Menu() {
                </div>
 
                {/* Pagination */}
-               <div className="mt-8 flex justify-center">
-                  <nav className="flex items-center">
-                     <button className="px-3 py-1 rounded-l border border-gray-300 hover:bg-gray-100">
+               <div className="menu-container-pagination">
+                  <nav className="menu-container-pagination-nav">
+                     <button
+                        className={`menu-container-pagination-prev ${
+                           currentPage === 1 ? 'menu-container-pagination-disabled' : ''
+                        }`}
+                        onClick={handlePrevPage}
+                        disabled={currentPage === 1}
+                     >
                         Previous
                      </button>
-                     {[1, 2].map((page) => (
+                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                         <button
                            key={page}
-                           className={`px-3 py-1 border-t border-b border-gray-300 ${
-                              page === 1 ? 'bg-amber-600 text-white' : 'hover:bg-gray-100'
+                           onClick={() => setCurrentPage(page)}
+                           className={`menu-container-pagination-page ${
+                              page === currentPage ? 'menu-container-pagination-active' : ''
                            }`}
                         >
                            {page}
                         </button>
                      ))}
-                     <button className="px-3 py-1 rounded-r border border-gray-300 hover:bg-gray-100">
+                     <button
+                        className={`menu-container-pagination-next ${
+                           currentPage === totalPages ? 'menu-container-pagination-disabled' : ''
+                        }`}
+                        onClick={handleNextPage}
+                        disabled={currentPage === totalPages}
+                     >
                         Next
                      </button>
                   </nav>

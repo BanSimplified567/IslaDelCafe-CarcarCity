@@ -8,9 +8,11 @@ const Index = lazy(() => import('./Pages/user/Index.jsx'));
 const About = lazy(() => import('./Pages/user/About.jsx'));
 const Contact = lazy(() => import('./Pages/user/Contact.jsx'));
 const Cart = lazy(() => import('./Pages/user/Cart.jsx'));
-const ProductDetail = lazy(() => import('./Pages/user/ProductDetails.jsx'));
+const ProductDetails = lazy(() => import('./Pages/user/ProductDetails.jsx'));
+
 const Checkout = lazy(() => import('./Pages/user/Checkout.jsx'));
 const Profile = lazy(() => import('./Pages/user/Profile.jsx'));
+const NotFound = lazy(() => import('./Pages/404.jsx')); // Import the NotFound component
 
 // Admin Pages
 const LoginAdmin = lazy(() => import('./components/form/LogInAdmin.jsx'));
@@ -36,25 +38,6 @@ const PageLoader = () => (
          <p className="mt-2 text-amber-800 font-medium">Loading...</p>
       </div>
    </div>
-);
-
-// Hamburger menu icon component
-const MenuIcon = () => (
-   <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-   >
-      <line x1="3" y1="12" x2="21" y2="12"></line>
-      <line x1="3" y1="6" x2="21" y2="6"></line>
-      <line x1="3" y1="18" x2="21" y2="18"></line>
-   </svg>
 );
 
 // Root layout with Navbar and dynamic Outlet for rendering children
@@ -120,7 +103,6 @@ const RootLayout = () => {
    // For regular pages
    return (
       <main>
-
          {/* Navbar for regular pages */}
          <div className={`navbar-container ${isMobileNavOpen ? 'open' : ''}`}>
             <Suspense fallback={<PageLoader />}>
@@ -143,6 +125,7 @@ const AdminLayout = () => {
    return (
       <Suspense fallback={<PageLoader />}>
          <NavbarAdmin />
+         <Outlet />
       </Suspense>
    );
 };
@@ -162,8 +145,10 @@ export const router = createBrowserRouter([
          { path: '/about', element: <About /> },
          { path: '/contact', element: <Contact /> },
          { path: '/checkout', element: <Checkout /> },
-         { path: '/productdetails', element: <ProductDetail /> },
+         { path: '/product/:id', element: <ProductDetails /> }, // Updated route with parameter
          { path: '/profile', element: <Profile /> },
+         { path: '/cart', element: <Cart /> },
+
          // Admin routes nested under AdminLayout
          {
             element: <AdminLayout />,
@@ -178,6 +163,9 @@ export const router = createBrowserRouter([
                { path: '/users', element: <Users /> },
             ],
          },
+
+         // 404 - This must be the last route
+         { path: '*', element: <NotFound /> },
       ],
    },
 ]);
