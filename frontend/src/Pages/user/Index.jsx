@@ -69,7 +69,7 @@ function Index() {
             // Reset to beginning if we've reached the end
             return nextIndex >= totalImagesPages ? 0 : nextIndex;
          });
-      }, 8000);
+      }, 5000);
 
       return () => clearInterval(interval);
    }, [totalImagesPages]);
@@ -88,7 +88,7 @@ function Index() {
                   WELCOME TO <span>ISLA DEL CAFE</span>
                </h1>
                <p>Your tropical coffee escape in the Heritage City of the South.</p>
-               <button>ORDER NOW</button>
+                  <button onClick={() => navigate('/menu')}>ORDER NOW</button>
             </div>
 
             <div className="index-section-images">

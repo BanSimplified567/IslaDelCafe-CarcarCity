@@ -2,6 +2,7 @@ import { ArrowLeft, ShoppingCart, Star } from 'lucide-react';
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { products } from '../../components/Products';
+import '../../style/ProductsDetails.css'; // We'll create this CSS file separately
 
 function ProductDetails() {
    const { id } = useParams();
@@ -12,14 +13,14 @@ function ProductDetails() {
 
    if (!product) {
       return (
-         <div className="min-h-screen flex items-center justify-center">
-            <div className="text-center">
-               <h2 className="text-2xl font-bold text-gray-800">Product not found</h2>
+         <div className="product-details-not-found">
+            <div className="product-details-not-found-content">
+               <h2 className="product-details-not-found-title">Product not found</h2>
                <button
                   onClick={() => navigate(-1)}
-                  className="mt-4 inline-flex items-center px-4 py-2 bg-brown-600 text-white rounded-md hover:bg-brown-700"
+                  className="product-details-not-found-button"
                >
-                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  <ArrowLeft className="product-details-icon" />
                   Go Back
                </button>
             </div>
@@ -28,97 +29,97 @@ function ProductDetails() {
    }
 
    return (
-      <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-         <div className="max-w-7xl mx-auto">
+      <div className="product-details-container">
+         <div className="product-details-wrapper">
             <button
                onClick={() => navigate(-1)}
-               className="mb-8 inline-flex items-center text-gray-600 hover:text-gray-800"
+               className="product-details-back-button"
             >
-               <ArrowLeft className="w-5 h-5 mr-2" />
+               <ArrowLeft className="product-details-icon" />
                Back to Menu
             </button>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-               <div className="md:flex">
+            <div className="product-details-card">
+               <div className="product-details-content">
                   {/* Product Image */}
-                  <div className="md:w-1/2">
+                  <div className="product-details-image-container">
                      <img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-[500px] object-cover"
+                        className="product-details-image"
                      />
                   </div>
 
                   {/* Product Info */}
-                  <div className="md:w-1/2 p-8">
-                     <div className="flex justify-between items-start">
+                  <div className="product-details-info">
+                     <div className="product-details-header">
                         <div>
-                           <h1 className="text-3xl font-bold text-gray-900">{product.name}</h1>
-                           <div className="mt-2 flex items-center">
+                           <h1 className="product-details-title">{product.name}</h1>
+                           <div className="product-details-rating">
                               {[...Array(5)].map((_, index) => (
                                  <Star
                                     key={index}
-                                    className={`w-5 h-5 ${
+                                    className={`product-details-star ${
                                        index < product.rating
-                                          ? 'text-yellow-400 fill-current'
-                                          : 'text-gray-300'
+                                          ? 'product-details-star-filled'
+                                          : 'product-details-star-empty'
                                     }`}
                                  />
                               ))}
-                              <span className="ml-2 text-gray-600">
+                              <span className="product-details-reviews">
                                  ({product.reviews} reviews)
                               </span>
                            </div>
                         </div>
-                        <div className="text-right">
-                           <p className="text-3xl font-bold text-brown-600">
+                        <div className="product-details-price-container">
+                           <p className="product-details-price">
                               ₱{product.price.toFixed(2)}
                            </p>
                            {product.originalPrice > product.price && (
-                              <p className="text-sm text-gray-500 line-through">
+                              <p className="product-details-original-price">
                                  ₱{product.originalPrice.toFixed(2)}
                               </p>
                            )}
                         </div>
                      </div>
 
-                     <div className="mt-8">
-                        <h2 className="text-lg font-semibold text-gray-900">Description</h2>
-                        <p className="mt-4 text-gray-600 leading-relaxed">{product.description}</p>
+                     <div className="product-details-section">
+                        <h2 className="product-details-section-title">Description</h2>
+                        <p className="product-details-description">{product.description}</p>
                      </div>
 
-                     <div className="mt-8">
-                        <h2 className="text-lg font-semibold text-gray-900">Details</h2>
-                        <dl className="mt-4 space-y-4">
-                           <div className="flex items-center">
-                              <dt className="w-1/3 text-gray-600">Category:</dt>
-                              <dd className="w-2/3 font-medium text-gray-900 capitalize">
+                     <div className="product-details-section">
+                        <h2 className="product-details-section-title">Details</h2>
+                        <dl className="product-details-specs">
+                           <div className="product-details-spec-item">
+                              <dt className="product-details-spec-label">Category:</dt>
+                              <dd className="product-details-spec-value product-details-capitalize">
                                  {product.category}
                               </dd>
                            </div>
-                           <div className="flex items-center">
-                              <dt className="w-1/3 text-gray-600">Temperature:</dt>
-                              <dd className="w-2/3 font-medium text-gray-900">
+                           <div className="product-details-spec-item">
+                              <dt className="product-details-spec-label">Temperature:</dt>
+                              <dd className="product-details-spec-value">
                                  {product.temperature}
                               </dd>
                            </div>
-                           <div className="flex items-center">
-                              <dt className="w-1/3 text-gray-600">Size Options:</dt>
-                              <dd className="w-2/3 font-medium text-gray-900">
+                           <div className="product-details-spec-item">
+                              <dt className="product-details-spec-label">Size Options:</dt>
+                              <dd className="product-details-spec-value">
                                  {product.sizes.join(', ')}
                               </dd>
                            </div>
                         </dl>
                      </div>
 
-                     <div className="mt-8 space-y-4">
-                        <div className="flex items-center space-x-4">
-                           <label htmlFor="size" className="text-gray-700 font-medium">
+                     <div className="product-details-actions">
+                        <div className="product-details-select-group">
+                           <label htmlFor="size" className="product-details-select-label">
                               Size:
                            </label>
                            <select
                               id="size"
-                              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-brown-500 focus:ring-brown-500"
+                              className="product-details-select"
                            >
                               {product.sizes.map((size) => (
                                  <option key={size} value={size}>
@@ -128,13 +129,13 @@ function ProductDetails() {
                            </select>
                         </div>
 
-                        <div className="flex items-center space-x-4">
-                           <label htmlFor="quantity" className="text-gray-700 font-medium">
+                        <div className="product-details-select-group">
+                           <label htmlFor="quantity" className="product-details-select-label">
                               Quantity:
                            </label>
                            <select
                               id="quantity"
-                              className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-brown-500 focus:ring-brown-500"
+                              className="product-details-select"
                            >
                               {[1, 2, 3, 4, 5].map((num) => (
                                  <option key={num} value={num}>
@@ -144,8 +145,8 @@ function ProductDetails() {
                            </select>
                         </div>
 
-                        <button className="w-full bg-brown-600 text-white py-3 px-6 rounded-md hover:bg-brown-700 flex items-center justify-center">
-                           <ShoppingCart className="w-5 h-5 mr-2" />
+                        <button className="product-details-add-button">
+                           <ShoppingCart className="product-details-icon" />
                            Add to Cart
                         </button>
                      </div>
