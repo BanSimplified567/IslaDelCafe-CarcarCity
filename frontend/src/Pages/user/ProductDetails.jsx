@@ -1,12 +1,15 @@
+import { products } from '@components/Products';
+import '@style/ProductsDetails.css';
 import { ArrowLeft, ShoppingCart, Star } from 'lucide-react';
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { products } from '../../components/Products';
-import '../../style/ProductsDetails.css'; // We'll create this CSS file separately
+import { CartContext } from './CartContext';
 
 function ProductDetails() {
    const { id } = useParams();
    const navigate = useNavigate();
+   const [quantity, setQuantity] = useState(1);
+   const { cartItems, addToCart } = useContext(CartContext);
 
    // Find the product based on the ID
    const product = products.find((p) => p.id === parseInt(id));
@@ -16,10 +19,7 @@ function ProductDetails() {
          <div className="product-details-not-found">
             <div className="product-details-not-found-content">
                <h2 className="product-details-not-found-title">Product not found</h2>
-               <button
-                  onClick={() => navigate(-1)}
-                  className="product-details-not-found-button"
-               >
+               <button onClick={() => navigate(-1)} className="product-details-not-found-button">
                   <ArrowLeft className="product-details-icon" />
                   Go Back
                </button>
@@ -28,13 +28,22 @@ function ProductDetails() {
       );
    }
 
+   const handleAddToCart = () => {
+      addToCart({
+         ...product,
+         quantity: parseInt(quantity),
+      });
+      // Optional: Show success message or navigate to cart
+      alert(`${product.name} added to cart!`);
+      // Alternatively: navigate('/cart');
+   };
+
+   const isInCart = cartItems.some((item) => item.id === product.id);
+
    return (
       <div className="product-details-container">
          <div className="product-details-wrapper">
-            <button
-               onClick={() => navigate(-1)}
-               className="product-details-back-button"
-            >
+            <button onClick={() => navigate(-1)} className="product-details-back-button">
                <ArrowLeft className="product-details-icon" />
                Back to Menu
             </button>
@@ -72,9 +81,7 @@ function ProductDetails() {
                            </div>
                         </div>
                         <div className="product-details-price-container">
-                           <p className="product-details-price">
-                              ₱{product.price.toFixed(2)}
-                           </p>
+                           <p className="product-details-price">₱{product.price.toFixed(2)}</p>
                            {product.originalPrice > product.price && (
                               <p className="product-details-original-price">
                                  ₱{product.originalPrice.toFixed(2)}
@@ -98,9 +105,9 @@ function ProductDetails() {
                               </dd>
                            </div>
                            <div className="product-details-spec-item">
-                              <dt className="product-details-spec-label">Temperature:</dt>
+                              <dt className="product-details-spec-label">Ingredients:</dt>
                               <dd className="product-details-spec-value">
-                                 {product.temperature}
+                                 {product.ingredients.join(', ')}
                               </dd>
                            </div>
                            <div className="product-details-spec-item">
@@ -114,28 +121,14 @@ function ProductDetails() {
 
                      <div className="product-details-actions">
                         <div className="product-details-select-group">
-                           <label htmlFor="size" className="product-details-select-label">
-                              Size:
-                           </label>
-                           <select
-                              id="size"
-                              className="product-details-select"
-                           >
-                              {product.sizes.map((size) => (
-                                 <option key={size} value={size}>
-                                    {size}
-                                 </option>
-                              ))}
-                           </select>
-                        </div>
-
-                        <div className="product-details-select-group">
                            <label htmlFor="quantity" className="product-details-select-label">
                               Quantity:
                            </label>
                            <select
                               id="quantity"
                               className="product-details-select"
+                              value={quantity}
+                              onChange={(e) => setQuantity(e.target.value)}
                            >
                               {[1, 2, 3, 4, 5].map((num) => (
                                  <option key={num} value={num}>
@@ -145,11 +138,22 @@ function ProductDetails() {
                            </select>
                         </div>
 
-                        <button className="product-details-add-button">
+                        <button className="product-details-add-button" onClick={handleAddToCart}>
                            <ShoppingCart className="product-details-icon" />
-                           Add to Cart
+                           {isInCart ? 'Update Cart' : 'Add to Cart'}
                         </button>
                      </div>
+
+                     {isInCart && (
+                        <div className="product-details-cart-status">
+                           <button
+                              onClick={() => navigate('/cart')}
+                              className="product-details-view-cart-button"
+                           >
+                              View Cart
+                           </button>
+                        </div>
+                     )}
                   </div>
                </div>
             </div>

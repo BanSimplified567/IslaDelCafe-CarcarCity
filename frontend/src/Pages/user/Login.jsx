@@ -1,6 +1,6 @@
 import { Coffee, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
-import '../../style/Login.css'; // Import the CSS file
+import '@style/Login.css'; // Import the CSS file
 
 function Login() {
    const [email, setEmail] = useState('');

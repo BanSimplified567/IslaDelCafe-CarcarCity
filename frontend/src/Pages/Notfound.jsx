@@ -1,6 +1,5 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
-import '../style/indexError.css'; // You'll need to create this CSS file with the styles
+import '@style/indexError.css'; // You'll need to create this CSS file with the styles
 
 const NotFound = () => {
    return (

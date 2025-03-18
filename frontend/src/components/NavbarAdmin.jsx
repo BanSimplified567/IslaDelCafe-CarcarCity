@@ -9,8 +9,8 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import IslaDelCafe from '../assets/IslaDelCafeLogoText.png'; // Adjust the path as needed
-import '../style/NavbarAdmin.css';
+import IslaDelCafe from '@assets/IslaDelCafeLogoText.png'; // Adjust the path as needed
+import '@style/NavbarAdmin.css';
 
 const NavItem = ({ icon, label, to, isActive, collapsed }) => {
    return (

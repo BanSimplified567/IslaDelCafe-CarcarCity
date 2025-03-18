@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Footer from '../../components/Footer';
+import Footer from '@components/Footer';
 
-import '../../style/ContactUs.css'; // Create this CSS file
+import '@style/ContactUs.css'; // Create this CSS file
 
 function ContactUs() {
    const navigate = useNavigate();
@@ -50,52 +50,7 @@ function ContactUs() {
             <h1>Contact</h1>
          </section>
 
-         {/* Contact Information Section */}
-         <section className="contact-us-info">
-            <div className="contact-us-info-grid">
-               <div className="contact-us-info-card">
-                  <div className="contact-us-info-icon">📍</div>
-                  <h3 className="contact-us-info-title">Visit Us</h3>
-                  <p className="contact-us-info-text">
-                     Isla del Cafè - Carcar
-                     <br />
-                     Carcar City, Cebu
-                     <br />
-                     Philippines
-                  </p>
-               </div>
 
-               <div className="contact-us-info-card">
-                  <div className="contact-us-info-icon">📱</div>
-                  <h3 className="contact-us-info-title">Call Us</h3>
-                  <p className="contact-us-info-text">
-                     Phone: +63 123 456 7890
-                     <br />
-                     Mobile: +63 987 654 3210
-                  </p>
-               </div>
-
-               <div className="contact-us-info-card">
-                  <div className="contact-us-info-icon">✉️</div>
-                  <h3 className="contact-us-info-title">Email Us</h3>
-                  <p className="contact-us-info-text">
-                     General: info@isladelcafe.com
-                     <br />
-                     Orders: orders@isladelcafe.com
-                  </p>
-               </div>
-
-               <div className="contact-us-info-card">
-                  <div className="contact-us-info-icon">⏰</div>
-                  <h3 className="contact-us-info-title">Opening Hours</h3>
-                  <p className="contact-us-info-text">
-                     Monday - Friday: 7:00 AM - 9:00 PM
-                     <br />
-                     Saturday - Sunday: 8:00 AM - 10:00 PM
-                  </p>
-               </div>
-            </div>
-         </section>
 
          {/* Contact Form and Map Section */}
          <section className="contact-us-form-map">
@@ -164,27 +119,7 @@ function ContactUs() {
                               </div>
                            </div>
 
-                           <div className="contact-us-form-group">
-                              <label htmlFor="subject" className="contact-us-form-label">
-                                 Subject
-                              </label>
-                              <select
-                                 id="subject"
-                                 name="subject"
-                                 value={formData.subject}
-                                 onChange={handleChange}
-                                 className="contact-us-form-select"
-                                 required
-                              >
-                                 <option value="General Inquiry">General Inquiry</option>
-                                 <option value="Feedback">Feedback</option>
-                                 <option value="Catering">Catering Order</option>
-                                 <option value="Bulk Order">Bulk Order</option>
-                                 <option value="Partnership">Partnership</option>
-                                 <option value="Other">Other</option>
-                              </select>
-                           </div>
-
+                        
                            <div className="contact-us-form-group">
                               <label htmlFor="message" className="contact-us-form-label">
                                  Message
@@ -250,6 +185,11 @@ function ContactUs() {
                </div>
             </div>
          </section>
+
+
+
+
+
 
          {/* Social Media Section */}
          <section className="contact-us-social">

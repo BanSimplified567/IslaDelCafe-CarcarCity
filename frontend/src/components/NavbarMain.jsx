@@ -1,7 +1,7 @@
 import { Menu, ShoppingCart, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import '../style/NavbarMain.css';
+import '@style/NavbarMain.css';
 
 function NavbarMain() {
    const [menuOpen, setMenuOpen] = useState(false);

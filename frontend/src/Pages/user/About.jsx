@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import IslaDelCafeCoffee from '../../assets/IslaDelCafeCoffee.jpg';
-import IslaDelCafeKuyaKenn from '../../assets/IslaDelCafeKuyaKenn.jpg';
-import IslaDelCafeShop from '../../assets/IslaDelCafeShop.jpg';
-import IslaDelCafeAteGail from '../../assets/IslaDelCafeAteGail.jpg';
-import Footer from '../../components/Footer';
+import IslaDelCafeCoffee from '@assets/IslaDelCafeCoffee.jpg';
+import IslaDelCafeKuyaKenn from '@assets/IslaDelCafeKuyaKenn.jpg';
+import IslaDelCafeShop from '@assets/IslaDelCafeShop.jpg';
+import IslaDelCafeAteGail from '@assets/IslaDelCafeAteGail.jpg';
+import Footer from '@components/Footer';
 
-import '../../style/AboutUs.css'; // Create this CSS file
+import '@style/AboutUs.css'; // Create this CSS file
 
 function AboutUs() {
    const navigate = useNavigate();

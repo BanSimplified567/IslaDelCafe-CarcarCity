@@ -3,32 +3,33 @@ import { createBrowserRouter, Outlet, RouterProvider, useLocation } from 'react-
 
 // Lazy load pages for code splitting
 // User Pages
-const Login = lazy(() => import('./components/form/Login.jsx'));
-const Index = lazy(() => import('./Pages/user/Index.jsx'));
-const About = lazy(() => import('./Pages/user/About.jsx'));
-const Contact = lazy(() => import('./Pages/user/Contact.jsx'));
-const Cart = lazy(() => import('./Pages/user/Cart.jsx'));
-const ProductDetails = lazy(() => import('./Pages/user/ProductDetails.jsx'));
-
-const Checkout = lazy(() => import('./Pages/user/Checkout.jsx'));
-const Profile = lazy(() => import('./Pages/user/Profile.jsx'));
-const NotFound = lazy(() => import('./Pages/404.jsx')); // Import the NotFound component
+const Login = lazy(() => import('@pages/user/Login'));
+const Index = lazy(() => import('@pages/user/Index'));
+const About = lazy(() => import('@pages/user/About'));
+const Contact = lazy(() => import('@pages/user/Contact'));
+const Cart = lazy(() => import('@pages/user/Cart'));
+const ProductDetails = lazy(() => import('@pages/user/ProductDetails'));
+const Checkout = lazy(() => import('@pages/user/Checkout'));
+const Profile = lazy(() => import('@pages/user/Profile'));
+const NotFound = lazy(() => import('@pages/Notfound')); // Ensure this path is correct
 
 // Admin Pages
-const LoginAdmin = lazy(() => import('./components/form/LogInAdmin.jsx'));
-const Admin = lazy(() => import('./Pages/admin/Admin.jsx'));
-const Dashboard = lazy(() => import('./Pages/admin/Dashboard.jsx'));
-const Menu = lazy(() => import('./Pages/user/Menu.jsx'));
-const Employees = lazy(() => import('./Pages/admin/Employees.jsx'));
-const Inventory = lazy(() => import('./Pages/admin/Inventory.jsx'));
-const Messages = lazy(() => import('./Pages/admin/Messages.jsx'));
-const Orders = lazy(() => import('./Pages/admin/Orders.jsx'));
-const Products = lazy(() => import('./Pages/admin/Products.jsx'));
-const Users = lazy(() => import('./Pages/admin/Users.jsx'));
+const LoginAdmin = lazy(() => import('@pages/admin/LogInAdmin'));
+const Admin = lazy(() => import('@pages/admin/Admin'));
+const Dashboard = lazy(() => import('@pages/admin/Dashboard'));
+const Menu = lazy(() => import('@pages/user/Menu'));
+const Employees = lazy(() => import('@pages/admin/Employees'));
+const Inventory = lazy(() => import('@pages/admin/Inventory'));
+const Messages = lazy(() => import('@pages/admin/Messages'));
+const Orders = lazy(() => import('@pages/admin/Orders'));
+const Products = lazy(() => import('@pages/admin/Products'));
+const Users = lazy(() => import('@pages/admin/Users'));
+
+import { CartProvider } from '@pages/user/CartContext';
 
 // Lazy load navbar components
-const NavbarMain = lazy(() => import('./components/NavbarMain'));
-const NavbarAdmin = lazy(() => import('./components/NavbarAdmin.jsx'));
+const NavbarMain = lazy(() => import('@components/NavbarMain'));
+const NavbarAdmin = lazy(() => import('@components/NavbarAdmin'));
 
 // Loading component for better user experience
 const PageLoader = () => (
@@ -172,7 +173,11 @@ export const router = createBrowserRouter([
 
 // Main App component
 function App() {
-   return <RouterProvider router={router} />;
+   return (
+      <CartProvider>
+         <RouterProvider router={router} />
+      </CartProvider>
+   );
 }
 
 export default App;

@@ -12,7 +12,7 @@ import {
    XAxis,
    YAxis,
 } from 'recharts';
-import '../../style/Dashboard.css';
+import '@style/Dashboard.css';
 
 // Import our new Sidebar component
 

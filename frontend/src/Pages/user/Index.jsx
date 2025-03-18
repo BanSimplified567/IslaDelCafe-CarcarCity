@@ -1,20 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import IslaDelCafeCoffee from '../../assets/IslaDelCafeCoffee.jpg';
-import IlaDelCafeCoffees from '../../assets/IslaDelCafeCoffees.jpg';
-import IslaDelCafeFoods from '../../assets/IslaDelCafeFoods.jpg';
-import IslaDelCafeBestSeller from '../../assets/IslaDelCafeJavaChips.jpg';
-import IslaDelCafePeople from '../../assets/IslaDelCafePeople.jpg';
-import IslaDelCafeShop from '../../assets/IslaDelCafeShop.jpg';
-import IslaDelCafeOwner from '../../assets/OwnerIslaDelCafe.jpg';
-import IslaDelCafeReviewOne from '../../assets/IslaDelCafeReviewOne.jpg';
-import IslaDelCafeReviewTwo from '../../assets/IslaDelCafeReviewTwo.jpg';
-import IslaDelCafeReviewThree from '../../assets/IslaDelCafeReviewThree.jpg';
-import IslaDelCafeReviewFour from '../../assets/IslaDelCafeReviewFour.jpg';
-import Footer from '../../components/Footer';
-import products from '../../components/Products';
-
-
+import IslaDelCafeCoffee from '@assets/IslaDelCafeCoffee.jpg';
+import IlaDelCafeCoffees from '@assets/IslaDelCafeCoffees.jpg';
+import IslaDelCafeFoods from '@assets/IslaDelCafeFoods.jpg';
+import IslaDelCafeBestSeller from '@assets/IslaDelCafeJavaChips.jpg';
+import IslaDelCafePeople from '@assets/IslaDelCafePeople.jpg';
+import IslaDelCafeShop from '@assets/IslaDelCafeShop.jpg';
+import IslaDelCafeOwner from '@assets/OwnerIslaDelCafe.jpg';
+import IslaDelCafeReviewOne from '@assets/IslaDelCafeReviewOne.jpg';
+import IslaDelCafeReviewTwo from '@assets/IslaDelCafeReviewTwo.jpg';
+import IslaDelCafeReviewThree from '@assets/IslaDelCafeReviewThree.jpg';
+import IslaDelCafeReviewFour from '@assets/IslaDelCafeReviewFour.jpg';
+import Footer from '@components/Footer';
+import products from '@components/Products';
 import '../../index.css';
 
 function Index() {

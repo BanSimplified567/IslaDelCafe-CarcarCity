@@ -1,13 +1,15 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Link } from 'react-router-dom';
-import { products } from '../../components/Products';
-import '../../style/Menu.css';
+import { products } from '@components/Products';
+import '@style/Menu.css';
+import { CartContext } from '../user/CartContext';
 
 function Menu() {
    const [selectedCategory, setSelectedCategory] = useState('all');
    const [sortBy, setSortBy] = useState('popular');
    const [currentPage, setCurrentPage] = useState(1);
    const itemsPerPage = 8; // Number of items to show per page
+   const { addToCart } = useContext(CartContext);
 
    // Filter products by category
    const filteredProducts =
@@ -41,6 +43,17 @@ function Menu() {
       if (currentPage < totalPages) {
          setCurrentPage(currentPage + 1);
       }
+   };
+
+   // Handle add to cart
+   const handleAddToCart = (product) => {
+      addToCart({
+         id: product.id,
+         name: product.name,
+         price: product.price,
+         quantity: 1,
+         image: product.image
+      });
    };
 
    // Function to render star ratings
@@ -78,6 +91,9 @@ function Menu() {
             <p className="menu-container-subtitle">
                Indulge in our handcrafted coffee and refreshing beverages
             </p>
+            <Link to="/cart" className="menu-container-cart-link">
+               View Cart
+            </Link>
          </header>
 
          <div className="menu-container-layout">
@@ -214,7 +230,12 @@ function Menu() {
                               >
                                  View Details
                               </Link>
-                              <button className="menu-container-add-button">Add to Cart</button>
+                              <button
+                                 className="menu-container-add-button"
+                                 onClick={() => handleAddToCart(product)}
+                              >
+                                 Add to Cart
+                              </button>
                            </div>
                         </div>
                      </div>
