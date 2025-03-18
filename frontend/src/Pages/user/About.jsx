@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import IslaDelCafeCoffee from '../../assets/IslaDelCafeCoffee.jpg';
-import IslaDelCafePeople from '../../assets/IslaDelCafePeople.jpg';
+import IslaDelCafeKuyaKenn from '../../assets/IslaDelCafeKuyaKenn.jpg';
 import IslaDelCafeShop from '../../assets/IslaDelCafeShop.jpg';
-import IslaDelCafeOwner from '../../assets/OwnerIslaDelCafe.jpg';
+import IslaDelCafeAteGail from '../../assets/IslaDelCafeAteGail.jpg';
 import Footer from '../../components/Footer';
 
 import '../../style/AboutUs.css'; // Create this CSS file
@@ -74,19 +74,19 @@ function AboutUs() {
             <div className="about-us-team-grid">
                <div className="about-us-team-member">
                   <div className="about-us-team-image">
-                     <img src={IslaDelCafeOwner} alt="Miss Veronica - Owner" />
+                     <img src={IslaDelCafeAteGail} alt="Miss Gail Labasan - Owner" />
                   </div>
-                  <h3 className="about-us-team-name">Miss Veronica</h3>
+                  <h3 className="about-us-team-name">Miss Gail Labasan</h3>
                   <p className="about-us-team-role">Founder & Owner</p>
                   <p className="about-us-team-bio">
-                     With a passion for coffee and hospitality, Veronica created Isla Del Cafe to
+                     With a passion for coffee and hospitality, Gail Labasan created Isla Del Cafe to
                      share her love for quality beverages and Filipino culture with the community of
                      Carcar City.
                   </p>
                </div>
                <div className="about-us-team-member">
                   <div className="about-us-team-image">
-                     <img src={IslaDelCafePeople} alt="Isla Del Cafe Team" />
+                     <img src={IslaDelCafeKuyaKenn} alt="Isla Del Cafe Team" />
                   </div>
                   <h3 className="about-us-team-name">Our Baristas</h3>
                   <p className="about-us-team-role">Coffee Specialists</p>
@@ -141,7 +141,7 @@ function AboutUs() {
                <h2 className="about-us-cta-title">Come Visit Us</h2>
                <p className="about-us-cta-text">
                   Experience the warm hospitality and exceptional coffee at Isla Del Cafe. We're
-                  open daily from 7:00 AM to 9:00 PM.
+                  open daily from 11:00 AM to 8:00 PM.
                </p>
                <div className="about-us-cta-buttons">
                   <button className="about-us-cta-button" onClick={() => navigate('/menu')}>

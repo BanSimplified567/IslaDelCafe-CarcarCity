@@ -1,4 +1,4 @@
-import { Clock, Coffee, Mail, MapPin, Phone } from 'lucide-react';
+import { Clock, Coffee, Mail, MapPin, Phone, Facebook, Instagram } from 'lucide-react';
 import '../style/Footer.css';
 
 const Footer = () => {
@@ -14,14 +14,16 @@ const Footer = () => {
                      <h3>Isla Del Cafe</h3>
                   </div>
                   <p>
-                     Welcome to Isla Del Cafe, where passion meets perfection in every cup. Since
-                     2020, we've been serving premium coffee sourced from local farms, handcrafted
-                     with care by our skilled baristas.
+                     Welcome to Isla del Café - your tropical coffee escape in the Heritage City of
+                     the South🌴🐚🍃
                   </p>
                   <div className="footer-icons">
-                     <a href="#">[FB ICON]</a>
-                     <a href="#">[TWITTER ICON]</a>
-                     <a href="#">[INSTAGRAM ICON]</a>
+                     <a href="https://www.facebook.com/profile.php?id=61571726873185">
+                        <Facebook className="icon" />
+                     </a>
+                     <a href="https://www.instagram.com/isladelcafe.carcar">
+                        <Instagram className="icon" />
+                     </a>
                   </div>
                </div>
 
@@ -29,13 +31,7 @@ const Footer = () => {
                   <h3>Recent Blog</h3>
                   <ul>
                      <li>
-                        <a href="#">The Art of Coffee Cupping - Jan 15, 2025</a>
-                     </li>
-                     <li>
-                        <a href="#">Local Coffee Farmers: Our Partners - Dec 28, 2024</a>
-                     </li>
-                     <li>
-                        <a href="#">Seasonal Coffee Specials - Dec 10, 2024</a>
+                        <a href="#">Isla Del Cafe Grand Opening CarCar City - Feb 20, 2025</a>
                      </li>
                   </ul>
                </div>
@@ -53,13 +49,7 @@ const Footer = () => {
                         <a href="#">Private Events</a>
                      </li>
                      <li>
-                        <a href="#">Coffee Workshops</a>
-                     </li>
-                     <li>
                         <a href="#">Custom Blends</a>
-                     </li>
-                     <li>
-                        <a href="#">Catering Services</a>
                      </li>
                   </ul>
                </div>
@@ -73,16 +63,21 @@ const Footer = () => {
                      </li>
                      <li>
                         <Phone />
-                        <a href="tel:09562856829">09562856829</a>
+                        <a href="tel:09751883932">09751883932</a>
                      </li>
                      <li>
                         <Mail />
-                        <a href="mailto:isladelcafecarcar@gmail.com">isladelcafecarcar@gmail.com</a>
+                        <a
+                           href="mailto:isladelcafecarcar@gmail.com
+"
+                        >
+                           isladelcafecarcar@gmail.com
+                        </a>
                      </li>
                      <li>
                         <Clock />
                         <div>
-                           <p>Mon-Fri: 7:00 AM - 8:00 PM</p>
+                           <p>Mon-Fri: 11:00 AM - 8:00 PM</p>
                            <p>Sat-Sun: 8:00 AM - 9:00 PM</p>
                         </div>
                      </li>

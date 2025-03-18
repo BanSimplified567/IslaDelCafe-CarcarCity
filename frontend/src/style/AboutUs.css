@@ -16,7 +16,7 @@
   font-weight: 900;
   font-family: var(--font-playfairDisplay);
   margin-bottom: 20px;
-  color: var(--color-secondary);
+  color: var(--color-third);
 }
 
 @media screen and (min-width: 1200px) {
@@ -34,7 +34,7 @@
 
 
 .about-us-title span {
-  color: #8B4513;
+  color: var(--color-secondary);
 }
 
 .about-us-subtitle {
@@ -50,13 +50,12 @@
 
 .about-us-story-content {
   display: flex;
-  flex-direction: row;
-  gap: 40px;
+  gap: 2rem;
   align-items: center;
 }
 @media screen and (min-width: 1200px) {
 .about-us-story-content{
-  max-width: 60%;
+  max-width: 80%;
   margin: 0 auto;
 }
 }
@@ -112,10 +111,11 @@
 }
 
 .about-us-section-title {
-  font-size: 32px;
+  font-size: var(--font-xxl);
   font-weight: 600;
   margin-bottom: 30px;
-  color: #8B4513;
+  color: var(--color-secondary);
+    font-family: var(--font-playfairDisplay);
 }
 
 .about-us-section-title.centered {
@@ -123,7 +123,7 @@
 }
 
 .about-us-text {
-  font-size: 16px;
+  font-size: var(--font-x-small);
   line-height: 1.8;
   margin-bottom: 20px;
 }
@@ -141,8 +141,14 @@
 .about-us-team-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 30px;
+  gap: 2rem;
   margin-top: 40px;
+}
+@media screen and (min-width: 1200px) {
+  .about-us-team-grid{
+    max-width: 90%;
+    margin: 0 auto;
+  }
 }
 
 .about-us-team-member {
@@ -177,7 +183,7 @@
 
 .about-us-team-role {
   font-size: 14px;
-  color: #8B4513;
+  color: var(--color-secondary);
   margin: 0 20px 15px;
 }
 
@@ -222,7 +228,7 @@
   font-size: 20px;
   font-weight: 600;
   margin-bottom: 15px;
-  color: #8B4513;
+  color: var(--color-secondary);
 }
 
 .about-us-value-text {
@@ -233,7 +239,7 @@
 
 /* CTA Section */
 .about-us-cta {
-  background-color: #8B4513;
+  background-color: var(--color-secondary);
   color: #fff;
   padding: 60px 40px;
   border-radius: 10px;
@@ -247,13 +253,13 @@
 }
 
 .about-us-cta-title {
-  font-size: 32px;
+  font-size: var(--font-xxl);
   font-weight: 600;
   margin-bottom: 20px;
 }
 
 .about-us-cta-text {
-  font-size: 16px;
+  font-size: var(--font-x-small);
   line-height: 1.8;
   margin-bottom: 30px;
 }
@@ -267,12 +273,12 @@
 
 .about-us-cta-button {
   padding: 12px 30px;
-  font-size: 16px;
+  font-size: var(--font-x-small);
   font-weight: 600;
   border: none;
   border-radius: 30px;
   background-color: #fff;
-  color: #8B4513;
+  color: var(--color-secondary);
   cursor: pointer;
   transition: all 0.3s ease;
 }

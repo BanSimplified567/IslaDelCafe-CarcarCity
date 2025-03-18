@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import IslaDelCafeCoffee from '../../assets/IslaDelCafeCoffee.jpg';
 import IlaDelCafeCoffees from '../../assets/IslaDelCafeCoffees.jpg';
@@ -7,8 +7,13 @@ import IslaDelCafeBestSeller from '../../assets/IslaDelCafeJavaChips.jpg';
 import IslaDelCafePeople from '../../assets/IslaDelCafePeople.jpg';
 import IslaDelCafeShop from '../../assets/IslaDelCafeShop.jpg';
 import IslaDelCafeOwner from '../../assets/OwnerIslaDelCafe.jpg';
+import IslaDelCafeReviewOne from '../../assets/IslaDelCafeReviewOne.jpg';
+import IslaDelCafeReviewTwo from '../../assets/IslaDelCafeReviewTwo.jpg';
+import IslaDelCafeReviewThree from '../../assets/IslaDelCafeReviewThree.jpg';
+import IslaDelCafeReviewFour from '../../assets/IslaDelCafeReviewFour.jpg';
 import Footer from '../../components/Footer';
 import products from '../../components/Products';
+
 
 import '../../index.css';
 
@@ -32,24 +37,24 @@ function Index() {
    // Sample testimonials data
    const testimonials = [
       {
-         name: 'Miss Veronica',
-         text: 'Boost your productivity and build your mood with a short break in the most comfortable place. Boost your productivity and build your mood with a short.',
-         image: IslaDelCafeOwner,
+         name: 'Nikko',
+         text: 'Bought 4x the taste is okay for its price if you can wait for 20min minimum',
+         image: IslaDelCafeReviewOne,
       },
       {
-         name: 'John Smith',
+         name: 'Vince Mar',
          text: 'The atmosphere here is unmatched. Perfect place to work remotely or just enjoy a quiet moment with excellent coffee and service.',
-         image: IslaDelCafeOwner,
+         image: IslaDelCafeReviewTwo,
       },
       {
-         name: 'Maria Garcia',
+         name: 'Kenzo Yap',
          text: 'I visit weekly for their specialty drinks. The staff is always friendly and remembers my order. Truly a gem in our community!',
-         image: IslaDelCafeOwner,
+         image: IslaDelCafeReviewThree,
       },
       {
-         name: 'Maria Garcia',
+         name: 'Fermosa Colección',
          text: 'I visit weekly for their specialty drinks. The staff is always friendly and remembers my order. Truly a gem in our community!',
-         image: IslaDelCafeOwner,
+         image: IslaDelCafeReviewFour,
       },
    ];
    const [activeIndex, setActiveIndex] = useState(0);
@@ -235,6 +240,7 @@ function Index() {
                      Boost your productivity and build your mood with a short break in the most
                      comfortable place. Boost your productivity
                   </p>
+
                </span>
             </section>
             <section className="index-about-gallery">
