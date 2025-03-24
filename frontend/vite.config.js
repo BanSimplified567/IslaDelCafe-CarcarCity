@@ -20,4 +20,14 @@ export default defineConfig({
          '@style': path.resolve(__dirname, 'src/style'),
       },
    },
+   server: {
+      proxy: {
+         '/api': {
+            // Proxy requests starting with /api
+            target: 'http://localhost:8000', // Your PHP backend development server URL
+            changeOrigin: true, // Required for CORS in some cases
+            rewrite: (path) => path.replace(/^\/api/, ''), // Optional: Remove the /api prefix when forwarding
+         },
+      },
+   },
 });

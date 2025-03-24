@@ -14,14 +14,14 @@ function AboutUs() {
       <div className="about-us-container">
          {/* Hero Section */}
          <section className="about-us-hero">
-            <dv className="about-us-hero-content">
+            <div className="about-us-hero-content">
                <h1 className="about-us-title">
                   ABOUT <span>ISLA DEL CAFE</span>
                </h1>
                <p className="about-us-subtitle">
                   Your tropical coffee escape in the Heritage City of the South.
                </p>
-            </dv>
+            </div>
          </section>
 
          {/* Our Story Section */}

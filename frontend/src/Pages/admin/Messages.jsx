@@ -2,7 +2,7 @@
 function Messages() {
    return (
       <>
-         <h1>Hello</h1>
+         <h1>Messages</h1>
       </>
    );
 }

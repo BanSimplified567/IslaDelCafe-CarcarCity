@@ -24,6 +24,7 @@ const Messages = lazy(() => import('@pages/admin/Messages'));
 const Orders = lazy(() => import('@pages/admin/Orders'));
 const Products = lazy(() => import('@pages/admin/Products'));
 const Users = lazy(() => import('@pages/admin/Users'));
+const OrderConfirmation = lazy(() => import('@pages/user/OrderConfirmation'));
 
 import { CartProvider } from '@pages/user/CartContext';
 
@@ -41,7 +42,6 @@ const PageLoader = () => (
    </div>
 );
 
-// Root layout with Navbar and dynamic Outlet for rendering children
 const RootLayout = () => {
    const location = useLocation();
    const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
@@ -52,8 +52,8 @@ const RootLayout = () => {
 
    // Check if current route is an admin page
    const isAdminPage =
-      location.pathname.startsWith('/dashboard') ||
       location.pathname.startsWith('/admin') ||
+      location.pathname.startsWith('/dashboard') ||
       location.pathname.startsWith('/employees') ||
       location.pathname.startsWith('/inventory') ||
       location.pathname.startsWith('/messages') ||
@@ -84,38 +84,23 @@ const RootLayout = () => {
    if (isLoginPage) {
       return (
          <div className="login-page">
-            <Suspense fallback={<PageLoader />}>
-               <Outlet />
-            </Suspense>
-         </div>
-      );
-   }
-
-   // If it's an admin page, we'll render Outlet which will show the AdminLayout
-   // AdminLayout has its own Outlet for showing the specific admin page
-   if (isAdminPage) {
-      return (
-         <Suspense fallback={<PageLoader />}>
             <Outlet />
-         </Suspense>
+         </div>
       );
    }
 
    // For regular pages
    return (
       <main>
-         {/* Navbar for regular pages */}
-         <div className={`navbar-container ${isMobileNavOpen ? 'open' : ''}`}>
-            <Suspense fallback={<PageLoader />}>
+         {!isAdminPage && (
+            <div className={`navbar-container ${isMobileNavOpen ? 'open' : ''}`}>
                <NavbarMain />
-            </Suspense>
-         </div>
+            </div>
+         )}
 
          {/* Main content area */}
          <div className={`content-container ${isMobile && !isMobileNavOpen ? 'full-width' : ''}`}>
-            <Suspense fallback={<PageLoader />}>
-               <Outlet />
-            </Suspense>
+            <Outlet />
          </div>
       </main>
    );
@@ -124,10 +109,9 @@ const RootLayout = () => {
 // Admin layout with NavbarAdmin and Outlet for admin pages
 const AdminLayout = () => {
    return (
-      <Suspense fallback={<PageLoader />}>
+      <>
          <NavbarAdmin />
-         <Outlet />
-      </Suspense>
+      </>
    );
 };
 
@@ -146,6 +130,7 @@ export const router = createBrowserRouter([
          { path: '/about', element: <About /> },
          { path: '/contact', element: <Contact /> },
          { path: '/checkout', element: <Checkout /> },
+         { path: '/order-confirmation', element: <OrderConfirmation /> },
          { path: '/product/:id', element: <ProductDetails /> }, // Updated route with parameter
          { path: '/profile', element: <Profile /> },
          { path: '/cart', element: <Cart /> },
@@ -155,6 +140,7 @@ export const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
                { path: '/dashboard', element: <Dashboard /> },
+
                { path: '/admin', element: <Admin /> },
                { path: '/employees', element: <Employees /> },
                { path: '/inventory', element: <Inventory /> },
@@ -174,9 +160,11 @@ export const router = createBrowserRouter([
 // Main App component
 function App() {
    return (
-      <CartProvider>
-         <RouterProvider router={router} />
-      </CartProvider>
+      <Suspense fallback={<PageLoader />}>
+         <CartProvider>
+            <RouterProvider router={router}></RouterProvider>
+         </CartProvider>
+      </Suspense>
    );
 }
 

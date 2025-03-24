@@ -1,31 +1,35 @@
-/* Index.jsx */
-
-.index-IslaDelCafe-Logo-title {
-  font-family: var(--font-playfairDisplay);
-  font-size: var(--font-small);
-  font-weight: 700;
-  /* Ensure logo is visible on transparent background */
-}
-
-.index-IslaDelCafe-Title {
-  font-family: var(--font-playfairDisplay);
-}
-
-/* Add these properties to your existing index-header class */
+/* Header styles */
 .index-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 1rem 2rem;
   background-color: var(--color-primary);
-  box-shadow: 0 0 10px var(--color-primary);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   color: var(--light);
   z-index: 100;
   transition: all 0.3s ease;
-  /* Add these properties to make the header sticky */
-  position: sticky;
+  /* Fixed position styles */
+  position: fixed;
+  /* Changed from sticky to fixed */
   top: 0;
+  left: 0;
+  right: 0;
   width: 100%;
+}
+
+
+/* Logo styles */
+.index-IslaDelCafe-Logo-title {
+  font-family: var(--font-playfairDisplay);
+  font-size: var(--font-small);
+  font-weight: 700;
+  color: var(--light);
+  /* Ensure logo is visible on colored background */
+}
+
+.index-IslaDelCafe-Title {
+  font-family: var(--font-playfairDisplay);
 }
 
 /* Ensure smooth scrolling effect */
@@ -34,6 +38,7 @@
   backdrop-filter: blur(10px);
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
+
 /* Navigation menu */
 .index-nav {
   display: flex;
@@ -54,12 +59,14 @@
   text-decoration: none;
   font-weight: 500;
   font-size: 1rem;
-  /* Changed to dark for better visibility */
+  color: var(--light);
+  /* Ensure text is visible on colored background */
   transition: color 0.3s ease;
   font-family: var(--font-opensans);
   padding: 0.5rem 0;
   position: relative;
 }
+
 .index-nav-list-item a:after {
   content: '';
   position: absolute;
@@ -72,7 +79,8 @@
 }
 
 .index-nav-list-item a:focus,
-.index-nav-list-item a:active{
+.index-nav-list-item a:active,
+.index-nav-list-item a.active {
   font-weight: 900;
 }
 
@@ -97,32 +105,7 @@
   cursor: pointer;
 }
 
-.index-search-svg {
-  width: 1.25rem;
-  height: 1.25rem;
 
-  /* Changed to dark */
-  transition: color 0.3s ease;
-}
-
-.index-search-svg:hover {
-  color: var(--color-text-orange);
-}
-
-.index-signin-button {
-  background-color: #6f4e37;
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.index-signin-button:hover {
-  background-color: #5d4130;
-}
 
 /* User actions when logged in */
 .index-user-actions {
@@ -140,12 +123,18 @@
   justify-content: center;
   position: relative;
   transition: color 0.3s ease;
-
-  /* Changed to dark */
+  /* Ensure icon is visible */
 }
 
-.index-icon-button:hover {
-  color: var(--color-text-orange);
+.index-signin-button {
+  color: white;
+  background-color: var(--color-secondary);
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .index-icon {
@@ -160,8 +149,8 @@
   border: none;
   cursor: pointer;
   padding: 0.5rem;
-
-  /* Changed to dark */
+  color: var(--light);
+  /* Ensure icon is visible */
 }
 
 .index-mobile-menu-icon {
@@ -173,8 +162,8 @@
 @media (max-width: 768px) {
   .index-header {
     padding: 1rem;
-    /* Always semi-transparent on mobile */
   }
+
 
   .index-mobile-menu-toggle {
     display: block;
@@ -184,12 +173,15 @@
   .index-nav {
     display: block;
     position: fixed;
-    top: 4rem;
+    top: 3.5rem;
+    /* Align with header height */
     left: 0;
     right: 0;
     background-color: var(--color-primary);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, opacity 0.3s ease;
+    z-index: 99;
+    /* Just below header */
   }
 
   .index-nav-closed {
@@ -224,7 +216,8 @@
   }
 
   .index-IslaDelCafe-Logo-title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
+    /* Slightly smaller for mobile */
     order: 1;
   }
 }

@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import IslaDelCafeCoffee from '@assets/IslaDelCafeCoffee.jpg';
-import IlaDelCafeCoffees from '@assets/IslaDelCafeCoffees.jpg';
-import IslaDelCafeFoods from '@assets/IslaDelCafeFoods.jpg';
-import IslaDelCafeBestSeller from '@assets/IslaDelCafeJavaChips.jpg';
-import IslaDelCafePeople from '@assets/IslaDelCafePeople.jpg';
-import IslaDelCafeShop from '@assets/IslaDelCafeShop.jpg';
-import IslaDelCafeOwner from '@assets/OwnerIslaDelCafe.jpg';
-import IslaDelCafeReviewOne from '@assets/IslaDelCafeReviewOne.jpg';
-import IslaDelCafeReviewTwo from '@assets/IslaDelCafeReviewTwo.jpg';
-import IslaDelCafeReviewThree from '@assets/IslaDelCafeReviewThree.jpg';
-import IslaDelCafeReviewFour from '@assets/IslaDelCafeReviewFour.jpg';
 import Footer from '@components/Footer';
 import products from '@components/Products';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import '../../index.css';
+import IslaDelCafeCoffee from '/assets/IslaDelCafeCoffee.jpg';
+import IlaDelCafeCoffees from '/assets/IslaDelCafeCoffees.jpg';
+import IslaDelCafeFoods from '/assets/IslaDelCafeFoods.jpg';
+import IslaDelCafeBestSeller from '/assets/IslaDelCafeJavaChips.jpg';
+import IslaDelCafePeople from '/assets/IslaDelCafePeople.jpg';
+import IslaDelCafeReviewFour from '/assets/IslaDelCafeReviewFour.jpg';
+import IslaDelCafeReviewOne from '/assets/IslaDelCafeReviewOne.jpg';
+import IslaDelCafeReviewThree from '/assets/IslaDelCafeReviewThree.jpg';
+import IslaDelCafeReviewTwo from '/assets/IslaDelCafeReviewTwo.jpg';
+import IslaDelCafeShop from '/assets/IslaDelCafeShop.jpg';
+import IslaDelCafeOwner from '/assets/OwnerIslaDelCafe.jpg';
 
 function Index() {
    const navigate = useNavigate();
@@ -91,7 +91,7 @@ function Index() {
                   WELCOME TO <span>ISLA DEL CAFE</span>
                </h1>
                <p>Your tropical coffee escape in the Heritage City of the South.</p>
-                  <button onClick={() => navigate('/menu')}>ORDER NOW</button>
+               <button onClick={() => navigate('/menu')}>ORDER NOW</button>
             </div>
 
             <div className="index-section-images">
@@ -238,7 +238,6 @@ function Index() {
                      Boost your productivity and build your mood with a short break in the most
                      comfortable place. Boost your productivity
                   </p>
-
                </span>
             </section>
             <section className="index-about-gallery">

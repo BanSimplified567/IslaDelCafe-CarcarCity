@@ -1,43 +1,80 @@
-import { createContext, useEffect, useState } from 'react';
+import React, { createContext, useEffect, useState } from 'react';
 
+// Create the Cart Context
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
+   // Initialize cart from localStorage if available
    const [cartItems, setCartItems] = useState(() => {
-      // Load cart from localStorage if available
-      const savedCart = localStorage.getItem('coffeeCart');
+      const savedCart = localStorage.getItem('coffeeShopCart');
       return savedCart ? JSON.parse(savedCart) : [];
    });
 
    // Save cart to localStorage whenever it changes
    useEffect(() => {
-      localStorage.setItem('coffeeCart', JSON.stringify(cartItems));
+      localStorage.setItem('coffeeShopCart', JSON.stringify(cartItems));
    }, [cartItems]);
 
-   // Add item to cart
-   const addToCart = (item) => {
-      setCartItems((prevItems) => {
-         // Check if item already exists in cart
-         const existingItemIndex = prevItems.findIndex((cartItem) => cartItem.id === item.id);
+   // Function to add items to cart, combining items with same values
+   const addToCart = (product) => {
+      // Ensure the product has all required fields in a standard format
+      const standardizedProduct = {
+         id: product.id,
+         name: product.name,
+         price: parseFloat(product.price),
+         quantity: parseInt(product.quantity) || 1,
+         image: product.image.startsWith('/assets')
+            ? product.image
+            : `/assets/img/${product.image}`,
+      };
 
-         if (existingItemIndex !== -1) {
-            // Item exists, update quantity
+      setCartItems((prevItems) => {
+         // First, check if the exact same product already exists by ID
+         const existingItemIndex = prevItems.findIndex(
+            (item) => item.id === standardizedProduct.id
+         );
+
+         if (existingItemIndex >= 0) {
+            // Update existing item by adding the new quantity
             const updatedItems = [...prevItems];
-            updatedItems[existingItemIndex].quantity += 1;
+            updatedItems[existingItemIndex] = {
+               ...updatedItems[existingItemIndex],
+               quantity: updatedItems[existingItemIndex].quantity + standardizedProduct.quantity,
+            };
             return updatedItems;
-         } else {
-            // Item doesn't exist, add new item
-            return [...prevItems, item];
          }
+
+         // If not found by ID, check if there's an item with the same value
+         // (same name and price - assuming these determine if products are equivalent)
+         const sameValueItemIndex = prevItems.findIndex(
+            (item) =>
+               item.name === standardizedProduct.name && item.price === standardizedProduct.price
+         );
+
+         if (sameValueItemIndex >= 0) {
+            // Combine with the existing item that has the same value
+            const updatedItems = [...prevItems];
+            updatedItems[sameValueItemIndex] = {
+               ...updatedItems[sameValueItemIndex],
+               quantity: updatedItems[sameValueItemIndex].quantity + standardizedProduct.quantity,
+            };
+            return updatedItems;
+         }
+
+         // If it's a completely new item (by ID and value), add it
+         return [...prevItems, standardizedProduct];
       });
    };
 
-   // Update item quantity
-   const updateQuantity = (id, newQuantity) => {
-      if (newQuantity < 1) return;
+   // Update quantity of an item
+   const updateQuantity = (id, quantity) => {
+      if (quantity <= 0) {
+         removeItem(id);
+         return;
+      }
 
       setCartItems((prevItems) =>
-         prevItems.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item))
+         prevItems.map((item) => (item.id === id ? { ...item, quantity } : item))
       );
    };
 
@@ -51,6 +88,14 @@ export const CartProvider = ({ children }) => {
       setCartItems([]);
    };
 
+   // Calculate cart totals
+   const getCartTotal = () => {
+      return {
+         items: cartItems.reduce((total, item) => total + item.quantity, 0),
+         subtotal: cartItems.reduce((total, item) => total + item.price * item.quantity, 0),
+      };
+   };
+
    return (
       <CartContext.Provider
          value={{
@@ -59,6 +104,7 @@ export const CartProvider = ({ children }) => {
             updateQuantity,
             removeItem,
             clearCart,
+            getCartTotal,
          }}
       >
          {children}

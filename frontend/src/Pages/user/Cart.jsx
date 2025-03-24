@@ -1,12 +1,14 @@
-import { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import { CartContext } from './CartContext';
 import '@style/Cart.css';
+import { useContext, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+import { CartContext } from './CartContext';
 
 function Cart() {
    const { cartItems, updateQuantity, removeItem, clearCart } = useContext(CartContext);
    const [promoCode, setPromoCode] = useState('');
    const [promoApplied, setPromoApplied] = useState(false);
+   const navigate = useNavigate();
 
    const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
    const shipping = subtotal > 100 ? 0 : 10.99;
@@ -17,8 +19,27 @@ function Cart() {
       if (promoCode.toLowerCase() === 'discount10') {
          setPromoApplied(true);
       } else {
-         alert('Invalid promo code');
+         Swal.fire({
+            icon: 'error',
+            title: 'Invalid Promo Code',
+            text: 'Please enter a valid promo code!',
+         });
       }
+   };
+
+   const handleCheckout = () => {
+      Swal.fire({
+         title: 'Proceed to Checkout?',
+         text: `Your total is ₱${total.toFixed(2)}. Do you want to continue?`,
+         icon: 'question',
+         showCancelButton: true,
+         confirmButtonText: 'Yes, Checkout',
+         cancelButtonText: 'Cancel',
+      }).then((result) => {
+         if (result.isConfirmed) {
+            navigate('/checkout');
+         }
+      });
    };
 
    return (
@@ -52,7 +73,7 @@ function Cart() {
                                  <span>{item.name}</span>
                               </div>
                            </td>
-                           <td>₱{item.price.toFixed(2)}</td>
+                           <td>₱{item.price}</td>
                            <td>
                               <div className="cart-quantity">
                                  <button onClick={() => updateQuantity(item.id, item.quantity - 1)}>
@@ -82,7 +103,7 @@ function Cart() {
                   </tbody>
                </table>
                <div className="cart-actions">
-                  <Link to="/" className="cart-continue">
+                  <Link to="/menu" className="cart-continue">
                      ← Continue Shopping
                   </Link>
                   <button onClick={clearCart} className="cart-clear">
@@ -124,9 +145,9 @@ function Cart() {
                   </button>
                </div>
 
-               <Link to="/checkout" className="cart-checkout">
+               <button onClick={handleCheckout} className="cart-checkout">
                   Proceed to Checkout
-               </Link>
+               </button>
             </div>
          </div>
       </div>
@@ -134,3 +155,4 @@ function Cart() {
 }
 
 export default Cart;
+

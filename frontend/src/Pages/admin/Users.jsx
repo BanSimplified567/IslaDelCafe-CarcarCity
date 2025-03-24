@@ -2,7 +2,7 @@
 function Users() {
    return (
       <>
-         <h1>Hello</h1>
+         <h1>Users</h1>
       </>
    );
 }

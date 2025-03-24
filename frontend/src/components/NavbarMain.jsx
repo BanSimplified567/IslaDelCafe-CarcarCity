@@ -1,14 +1,14 @@
+import '@style/NavbarMain.css';
 import { Menu, ShoppingCart, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import '@style/NavbarMain.css';
 
 function NavbarMain() {
    const [menuOpen, setMenuOpen] = useState(false);
-   const [isLoggedIn, setIsLoggedIn] = useState(true);
+   const [isLoggedIn, setIsLoggedIn] = useState(false);
    const [isScrolled, setIsScrolled] = useState(false);
 
-   // Handle scroll event to change header transparency
+   // Handle scroll event to change header appearance when scrolled
    useEffect(() => {
       const handleScroll = () => {
          if (window.scrollY > 50) {
@@ -18,6 +18,10 @@ function NavbarMain() {
          }
       };
 
+      // Initial check
+      handleScroll();
+
+      // Add event listener
       window.addEventListener('scroll', handleScroll);
 
       // Clean up event listener on component unmount
@@ -26,72 +30,90 @@ function NavbarMain() {
       };
    }, []);
 
+   // Close mobile menu when clicking a link
+   const handleNavLinkClick = () => {
+      if (menuOpen) {
+         setMenuOpen(false);
+      }
+   };
+
    return (
-      <>
-         <header className={`index-header ${isScrolled ? 'index-header-scrolled' : ''}`}>
-            <div className="index-IslaDelCafe-Logo-title">IslaDelCafe</div>
+      <header className={`index-header ${isScrolled ? 'index-header-scrolled' : ''}`}>
+         <div className="index-IslaDelCafe-Logo-title">IslaDelCafe</div>
 
-            {/* Mobile Menu Toggle */}
-            <button className="index-mobile-menu-toggle" onClick={() => setMenuOpen(!menuOpen)}>
-               {menuOpen ? (
-                  <X className="index-mobile-menu-icon" />
-               ) : (
-                  <Menu className="index-mobile-menu-icon" />
-               )}
-            </button>
-
-            {/* Navigation */}
-            <nav className={`index-nav ${menuOpen ? 'index-nav-open' : 'index-nav-closed'}`}>
-               <ul className="index-nav-list">
-                  <li className="index-nav-list-item">
-                     <NavLink to="/index">Home</NavLink>
-                  </li>
-                  <li className="index-nav-list-item">
-                     <NavLink to="/menu">Menu</NavLink>
-                  </li>
-                  <li className="index-nav-list-item">
-                     <NavLink to="/about">About Us</NavLink>
-                  </li>
-                  <li className="index-nav-list-item">
-                     <NavLink to="/contact">Contact Us</NavLink>
-                  </li>
-               </ul>
-            </nav>
-
-            {/* Search & Sign In / User Account Section */}
-            <div className="index-search-signin">
-               <div className="index-search-icon">
-                  <svg
-                     xmlns="http://www.w3.org/2000/svg"
-                     className="index-search-svg"
-                     fill="none"
-                     viewBox="0 0 24 24"
-                     stroke="currentColor"
+         {/* Navigation */}
+         <nav className={`index-nav ${menuOpen ? 'index-nav-open' : 'index-nav-closed'}`}>
+            <ul className="index-nav-list">
+               <li className="index-nav-list-item">
+                  <NavLink
+                     to="/index"
+                     onClick={handleNavLinkClick}
+                     className={({ isActive }) => (isActive ? 'active' : '')}
                   >
-                     <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                     />
-                  </svg>
-               </div>
+                     Home
+                  </NavLink>
+               </li>
+               <li className="index-nav-list-item">
+                  <NavLink
+                     to="/menu"
+                     onClick={handleNavLinkClick}
+                     className={({ isActive }) => (isActive ? 'active' : '')}
+                  >
+                     Menu
+                  </NavLink>
+               </li>
+               <li className="index-nav-list-item">
+                  <NavLink
+                     to="/about"
+                     onClick={handleNavLinkClick}
+                     className={({ isActive }) => (isActive ? 'active' : '')}
+                  >
+                     About Us
+                  </NavLink>
+               </li>
+               <li className="index-nav-list-item">
+                  <NavLink
+                     to="/contact"
+                     onClick={handleNavLinkClick}
+                     className={({ isActive }) => (isActive ? 'active' : '')}
+                  >
+                     Contact Us
+                  </NavLink>
+               </li>
+            </ul>
+         </nav>
 
-               {isLoggedIn ? (
-                  <div className="index-user-actions">
-                     <NavLink to="/cart" className="index-icon-button">
-                        <ShoppingCart className="index-icon" />
-                     </NavLink>
-                     <NavLink to="/" className="index-icon-button">
-                        <User className="index-icon" />
-                     </NavLink>
-                  </div>
-               ) : (
-                  <button className="index-signin-button">Sign In</button>
-               )}
-            </div>
-         </header>
-      </>
+         {/* Search & Sign In / User Account Section */}
+         <div className="index-search-signin">
+            {isLoggedIn ? (
+               <div className="index-user-actions">
+                  <NavLink to="/cart" className="index-icon-button">
+                     <ShoppingCart className="index-icon" />
+                  </NavLink>
+                  <NavLink to="/profile" className="index-icon-button">
+                     <User className="index-icon" />
+                  </NavLink>
+               </div>
+            ) : (
+               <NavLink to="/" className="index-icon-button index-signin-button">
+                  SIGN IN
+               </NavLink>
+            )}
+         </div>
+
+         {/* Mobile Menu Toggle - Keep at the end for proper order in mobile view */}
+         <button
+            className="index-mobile-menu-toggle"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+         >
+            {menuOpen ? (
+               <X className="index-mobile-menu-icon" />
+            ) : (
+               <Menu className="index-mobile-menu-icon" />
+            )}
+         </button>
+      </header>
    );
 }
 

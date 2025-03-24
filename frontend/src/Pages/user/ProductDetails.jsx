@@ -1,7 +1,7 @@
 import { products } from '@components/Products';
 import '@style/ProductsDetails.css';
 import { ArrowLeft, ShoppingCart, Star } from 'lucide-react';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CartContext } from './CartContext';
 
@@ -10,9 +10,18 @@ function ProductDetails() {
    const navigate = useNavigate();
    const [quantity, setQuantity] = useState(1);
    const { cartItems, addToCart } = useContext(CartContext);
+   const [showViewCart, setShowViewCart] = useState(false);
 
    // Find the product based on the ID
    const product = products.find((p) => p.id === parseInt(id));
+
+   // Check if product is already in cart
+   const isInCart = cartItems.some((item) => item.id === parseInt(id));
+
+   // Set showViewCart based on whether the product is in the cart
+   useEffect(() => {
+      setShowViewCart(isInCart);
+   }, [isInCart]);
 
    if (!product) {
       return (
@@ -29,16 +38,18 @@ function ProductDetails() {
    }
 
    const handleAddToCart = () => {
+      // Use the standardized addToCart function from context
       addToCart({
          ...product,
          quantity: parseInt(quantity),
       });
-      // Optional: Show success message or navigate to cart
-      alert(`${product.name} added to cart!`);
-      // Alternatively: navigate('/cart');
-   };
 
-   const isInCart = cartItems.some((item) => item.id === product.id);
+      // Show the View Cart button
+      setShowViewCart(true);
+
+      // Optional: Show success message
+      alert(`${product.name} added to cart!`);
+   };
 
    return (
       <div className="product-details-container">
@@ -144,7 +155,8 @@ function ProductDetails() {
                         </button>
                      </div>
 
-                     {isInCart && (
+                     {/* View Cart button appears below the Add to Cart button after adding */}
+                     {showViewCart && (
                         <div className="product-details-cart-status">
                            <button
                               onClick={() => navigate('/cart')}

@@ -1,16 +1,39 @@
-import { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
-import { products } from '@components/Products';
 import '@style/Menu.css';
-import { CartContext } from '../user/CartContext';
+import { useContext, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { CartContext } from './CartContext';
 
 function Menu() {
    const [selectedCategory, setSelectedCategory] = useState('all');
    const [sortBy, setSortBy] = useState('popular');
    const [currentPage, setCurrentPage] = useState(1);
-   const itemsPerPage = 8; // Number of items to show per page
+   const itemsPerPage = 9; // Number of items to show per page
    const { addToCart } = useContext(CartContext);
+   const [products, setProducts] = useState([]);
+   const [loading, setLoading] = useState(true);
+   const [error, setError] = useState(null);
 
+   useEffect(() => {
+      const fetchProducts = async () => {
+         try {
+            setLoading(true);
+            const response = await fetch('/api/products.php');
+            if (!response.ok) {
+               throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            const data = await response.json();
+            setProducts(data);
+            setError(null);
+         } catch (err) {
+            setError('Failed to fetch products: ' + err.message);
+            console.error('Error fetching products:', err);
+         } finally {
+            setLoading(false);
+         }
+      };
+
+      fetchProducts();
+   }, []);
    // Filter products by category
    const filteredProducts =
       selectedCategory === 'all'
@@ -52,7 +75,7 @@ function Menu() {
          name: product.name,
          price: product.price,
          quantity: 1,
-         image: product.image
+         image: product.image,
       });
    };
 
@@ -83,6 +106,15 @@ function Menu() {
          </div>
       );
    };
+
+   // Show loading or error states
+   if (loading) {
+      return <div className="menu-container-loading">Loading products...</div>;
+   }
+
+   if (error) {
+      return <div className="menu-container-error">{error}</div>;
+   }
 
    return (
       <div className="menu-container-main">
@@ -196,7 +228,7 @@ function Menu() {
                      <div key={product.id} className="menu-container-product-card">
                         <div className="menu-container-product-image">
                            <img
-                              src={product.image}
+                              src={`/assets/img/${product.image}`}
                               alt={product.name}
                               className="menu-container-product-img"
                            />
@@ -206,18 +238,19 @@ function Menu() {
 
                            {/* Rating display */}
                            <div className="menu-container-product-rating">
-                              {renderStarRating(product.rating)}
+                              {renderStarRating(parseFloat(product.rating))}
                               <span className="menu-container-rating-text">
-                                 {product.rating.toFixed(1)} ({product.reviewCount} reviews)
+                                 {parseFloat(product.rating).toFixed(1)} ({product.review_count}{' '}
+                                 reviews)
                               </span>
                            </div>
 
                            <div className="menu-container-product-pricing">
                               <p className="menu-container-product-price">
-                                 ₱{product.price.toFixed(2)}
+                                 ₱{parseFloat(product.price).toFixed(2)}
                               </p>
                               <p className="menu-container-product-original-price">
-                                 ₱{product.originalPrice.toFixed(2)}
+                                 ₱{parseFloat(product.original_price).toFixed(2)}
                               </p>
                            </div>
                            <p className="menu-container-product-description">

@@ -58,11 +58,13 @@
 html {
   scroll-behavior: smooth;
 }
+/* Add padding to the body to prevent content from hiding behind fixed header */
 
 body {
   font-size: 100%;
   font-family: var(--font-opensans);
 }
+
 
 img {
   max-width: 100%;
@@ -70,6 +72,20 @@ img {
   /* Maintains aspect ratio */
   display: block;
   /* Avoids extra spacing below inline images */
+}
+
+.navbar-container{
+    padding-top: 5rem;
+}
+@media screen and (max-width: 768px) {
+  .navbar-container{
+    padding-top: 3.5rem;
+  }
+}
+@media screen and (max-width: 481px) {
+  .navbar-container{
+    padding-top: 4rem;
+  }
 }
 
 .index-section-header {
@@ -426,7 +442,12 @@ img {
   width: 100%;
   margin-bottom: 2rem;
 }
-
+@media (max-width: 768px) {
+  .index-menu-grid,
+  .image-grid {
+    grid-template-columns: 1fr;
+  }
+}
 .index-menu-item {
   background-color: white;
   border-radius: 0.5rem;
