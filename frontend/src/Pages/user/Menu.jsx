@@ -1,6 +1,7 @@
 import '@style/Menu.css';
 import { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import Swal from 'sweetalert2';
 import { CartContext } from './CartContext';
 
 function Menu() {
@@ -8,7 +9,7 @@ function Menu() {
    const [sortBy, setSortBy] = useState('popular');
    const [currentPage, setCurrentPage] = useState(1);
    const itemsPerPage = 9; // Number of items to show per page
-   const { addToCart } = useContext(CartContext);
+   const { addToCart, cartItems, maxQuantityPerItem = 5 } = useContext(CartContext);
    const [products, setProducts] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
@@ -34,6 +35,7 @@ function Menu() {
 
       fetchProducts();
    }, []);
+
    // Filter products by category
    const filteredProducts =
       selectedCategory === 'all'
@@ -68,8 +70,27 @@ function Menu() {
       }
    };
 
-   // Handle add to cart
+   // Check if item can be added to cart (not exceeding max quantity)
+   const canAddToCart = (productId) => {
+      const existingItem = cartItems.find((item) => item.id === productId);
+      return !existingItem || existingItem.quantity < maxQuantityPerItem;
+   };
+
+   // Handle add to cart with quantity check
    const handleAddToCart = (product) => {
+      const existingItem = cartItems.find((item) => item.id === product.id);
+      const currentQuantity = existingItem ? existingItem.quantity : 0;
+
+      if (currentQuantity >= maxQuantityPerItem) {
+         Swal.fire({
+            icon: 'warning',
+            title: 'Limit Reached',
+            text: `You can only order up to ${maxQuantityPerItem} of this item.`,
+            confirmButtonColor: '#6b705c',
+         });
+         return;
+      }
+
       addToCart({
          id: product.id,
          name: product.name,
@@ -77,8 +98,17 @@ function Menu() {
          quantity: 1,
          image: product.image,
       });
-   };
 
+      Swal.fire({
+         icon: 'success',
+         title: 'Added to Cart',
+         text: `${product.name} has been added to your cart.`,
+         timer: 1500,
+         showConfirmButton: false,
+         toast: true,
+         position: 'top-end',
+      });
+   };
    // Function to render star ratings
    const renderStarRating = (rating) => {
       const fullStars = Math.floor(rating);
@@ -107,10 +137,22 @@ function Menu() {
       );
    };
 
-   // Show loading or error states
    if (loading) {
-      return <div className="menu-container-loading">Loading products...</div>;
+      return (
+         <div className="menu-container-loading">
+            <div className="coffee-loader">
+               <div className="coffee-cup"></div>
+               <div className="steam">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+               </div>
+               <p>Brewing your coffee...</p>
+            </div>
+         </div>
+      );
    }
+
 
    if (error) {
       return <div className="menu-container-error">{error}</div>;
@@ -124,7 +166,7 @@ function Menu() {
                Indulge in our handcrafted coffee and refreshing beverages
             </p>
             <Link to="/cart" className="menu-container-cart-link">
-               View Cart
+               🛒 View Cart
             </Link>
          </header>
 
@@ -224,55 +266,75 @@ function Menu() {
 
                {/* Products grid */}
                <div className="menu-container-products-grid">
-                  {currentProducts.map((product) => (
-                     <div key={product.id} className="menu-container-product-card">
-                        <div className="menu-container-product-image">
-                           <img
-                              src={`/assets/img/${product.image}`}
-                              alt={product.name}
-                              className="menu-container-product-img"
-                           />
-                        </div>
-                        <div className="menu-container-product-details">
-                           <h3 className="menu-container-product-name">{product.name}</h3>
+                  {currentProducts.map((product) => {
+                     // Check if the item is at max quantity
+                     const isAtMaxQuantity = !canAddToCart(product.id);
 
-                           {/* Rating display */}
-                           <div className="menu-container-product-rating">
-                              {renderStarRating(parseFloat(product.rating))}
-                              <span className="menu-container-rating-text">
-                                 {parseFloat(product.rating).toFixed(1)} ({product.review_count}{' '}
-                                 reviews)
-                              </span>
-                           </div>
 
-                           <div className="menu-container-product-pricing">
-                              <p className="menu-container-product-price">
-                                 ₱{parseFloat(product.price).toFixed(2)}
-                              </p>
-                              <p className="menu-container-product-original-price">
-                                 ₱{parseFloat(product.original_price).toFixed(2)}
-                              </p>
+                     return (
+                        <div key={product.id} className="menu-container-product-card">
+                           <div className="menu-container-product-image">
+                              <img
+                                 src={`/assets/img/${product.image}`}
+                                 alt={product.name}
+                                 className="menu-container-product-img"
+                              />
                            </div>
-                           <p className="menu-container-product-description">
-                              {product.description}
-                           </p>
-                           <div className="menu-container-product-actions">
-                              <Link
-                                 to={`/product/${product.id}`}
-                                 className="menu-container-view-button"
-                              >
-                                 View Details
-                              </Link>
-                              <button
-                                 className="menu-container-add-button"
-                                 onClick={() => handleAddToCart(product)}
-                              >
-                                 Add to Cart
-                              </button>
+                           <div className="menu-container-product-details">
+                              <h3 className="menu-container-product-name">{product.name}</h3>
+
+                              {/* Rating display */}
+                              <div className="menu-container-product-rating">
+                                 {renderStarRating(parseFloat(product.rating))}
+                                 <span className="menu-container-rating-text">
+                                    {parseFloat(product.rating).toFixed(1)} ({product.review_count}{' '}
+                                    reviews)
+                                 </span>
+                              </div>
+
+                              <div className="menu-container-product-pricing">
+                                 <p className="menu-container-product-price">
+                                    ₱{parseFloat(product.price).toFixed(2)}
+                                 </p>
+                                 <p className="menu-container-product-original-price">
+                                    ₱{parseFloat(product.original_price).toFixed(2)}
+                                 </p>
+                              </div>
+                              <p className="menu-container-product-description">
+                                 {product.description}
+                              </p>
+                              <div className="menu-container-product-actions">
+                                 <Link
+                                    to={`/product/${product.id}`}
+                                    className="menu-container-view-button"
+                                 >
+                                    View Details
+                                 </Link>
+
+                                 <button
+                                    className={`menu-container-add-button ${
+                                       isAtMaxQuantity ? 'menu-container-add-button-disabled' : ''
+                                    }`}
+                                    onClick={() => {
+                                       if (isAtMaxQuantity) {
+                                          Swal.fire({
+                                             icon: 'warning',
+                                             title: 'Maximum Limit Reached',
+                                             text: `You have already added ${maxQuantityPerItem} of this item.`,
+                                             confirmButtonColor: '#6b705c',
+                                          });
+                                       } else {
+                                          handleAddToCart(product);
+                                       }
+                                    }}
+                                 >
+                                    {isAtMaxQuantity ? 'Max Limit' : 'Add to Cart'}
+                                 </button>
+                              </div>
                            </div>
                         </div>
-                     </div>
-                  ))}
+                     );
+                  })}
                </div>
 
                {/* Pagination */}

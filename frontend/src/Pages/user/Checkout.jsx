@@ -15,7 +15,7 @@ function Checkout() {
       address: '',
       city: '',
       zipCode: '',
-      paymentMethod: 'credit-card',
+      paymentMethod: 'cash',
    });
 
    // Calculate totals (similar to Cart component)

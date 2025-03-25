@@ -48,7 +48,6 @@ function ProductDetails() {
       setShowViewCart(true);
 
       // Optional: Show success message
-      alert(`${product.name} added to cart!`);
    };
 
    return (

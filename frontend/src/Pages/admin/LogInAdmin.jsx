@@ -1,14 +1,35 @@
+import '@style/Login.css'; // ✅ Adjust according to your actual path or alias setup
+import axios from 'axios';
 import { Coffee, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
-import '@style/Login.css'; // Import the CSS file
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
    const [showPassword, setShowPassword] = useState(false);
+   const navigate = useNavigate();
 
-   const handleLogin = () => {
-      console.log('Logging in with', { email, password });
+   const handleLogin = async (e) => {
+      e.preventDefault();
+
+      try {
+         const response = await axios.post('/api/logInAdmin.php', {
+            email,
+            password,
+         });
+
+         if (response.data.success) {
+            console.log('Login successful:', response.data.admin);
+            // You may store to localStorage/session if needed
+            navigate('/dashboard');
+         } else {
+            alert(response.data.message || 'Login failed');
+         }
+      } catch (error) {
+         console.error('Login error:', error);
+         alert('An error occurred. Please try again.');
+      }
    };
 
    const togglePasswordVisibility = () => {
@@ -24,7 +45,7 @@ function Login() {
                <p className="loginAdminSubtitle">Welcome back admin</p>
             </div>
 
-            <div className="loginAdminForm">
+            <form className="loginAdminForm" onSubmit={handleLogin}>
                <div className="loginAdminFormGroup">
                   <label htmlFor="email" className="loginAdminLabel">
                      Email
@@ -32,12 +53,14 @@ function Login() {
                   <input
                      id="email"
                      type="email"
-                     placeholder="barista@example.com"
+                     placeholder="email@example.com"
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
                      className="loginAdminInput"
+                     required
                   />
                </div>
+
                <div className="loginAdminFormGroup">
                   <label htmlFor="password" className="loginAdminLabel">
                      Password
@@ -50,11 +73,13 @@ function Login() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="loginAdminInput"
+                        required
                      />
                      <button
                         type="button"
                         onClick={togglePasswordVisibility}
                         className="loginAdminPasswordToggle"
+                        aria-label="Toggle password visibility"
                      >
                         {showPassword ? (
                            <EyeOff className="loginAdminIcon" />
@@ -64,14 +89,10 @@ function Login() {
                      </button>
                   </div>
                </div>
+
                <div className="loginAdminOptions">
                   <div className="loginAdminRemember">
-                     <input
-                        id="remember-me"
-                        name="remember-me"
-                        type="checkbox"
-                        className="loginAdminCheckbox"
-                     />
+                     <input id="remember-me" type="checkbox" className="loginAdminCheckbox" />
                      <label htmlFor="remember-me" className="loginAdminCheckboxLabel">
                         Remember me
                      </label>
@@ -82,16 +103,17 @@ function Login() {
                      </a>
                   </div>
                </div>
-               <button onClick={handleLogin} className="loginAdminButton">
+
+               <button type="submit" className="loginAdminButton">
                   Sign in
                </button>
-            </div>
+            </form>
 
             <div className="loginAdminFooter">
-               Need an account?{' '}
-               <a href="#" className="loginAdminLink">
+               Need an account?
+               <Link className="loginAdminLink" to="/register">
                   Register here
-               </a>
+               </Link>
             </div>
          </div>
       </div>

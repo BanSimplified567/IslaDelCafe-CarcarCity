@@ -1,23 +1,32 @@
 import React, { createContext, useEffect, useState } from 'react';
+import Swal from 'sweetalert2';
 
 // Create the Cart Context
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-   // Initialize cart from localStorage if available
    const [cartItems, setCartItems] = useState(() => {
       const savedCart = localStorage.getItem('coffeeShopCart');
       return savedCart ? JSON.parse(savedCart) : [];
    });
 
-   // Save cart to localStorage whenever it changes
+   const MAX_QUANTITY_PER_ITEM = 5;
+
    useEffect(() => {
       localStorage.setItem('coffeeShopCart', JSON.stringify(cartItems));
    }, [cartItems]);
 
-   // Function to add items to cart, combining items with same values
+   const showMaxQuantityAlert = () => {
+      Swal.fire({
+         icon: 'info',
+         title: 'Quantity Limit Reached',
+         text: `Maximum quantity per item is ${MAX_QUANTITY_PER_ITEM}. Quantity has been adjusted.`,
+         confirmButtonColor: '#6f4e37',
+         confirmButtonText: 'OK',
+      });
+   };
+
    const addToCart = (product) => {
-      // Ensure the product has all required fields in a standard format
       const standardizedProduct = {
          id: product.id,
          name: product.name,
@@ -29,48 +38,73 @@ export const CartProvider = ({ children }) => {
       };
 
       setCartItems((prevItems) => {
-         // First, check if the exact same product already exists by ID
          const existingItemIndex = prevItems.findIndex(
             (item) => item.id === standardizedProduct.id
          );
 
          if (existingItemIndex >= 0) {
-            // Update existing item by adding the new quantity
+            const currentQuantity = prevItems[existingItemIndex].quantity;
+            const requestedQuantity = standardizedProduct.quantity;
+            const newQuantity = Math.min(
+               currentQuantity + requestedQuantity,
+               MAX_QUANTITY_PER_ITEM
+            );
+
+            if (currentQuantity + requestedQuantity > MAX_QUANTITY_PER_ITEM) {
+               showMaxQuantityAlert();
+            }
+
             const updatedItems = [...prevItems];
             updatedItems[existingItemIndex] = {
                ...updatedItems[existingItemIndex],
-               quantity: updatedItems[existingItemIndex].quantity + standardizedProduct.quantity,
+               quantity: newQuantity,
             };
             return updatedItems;
          }
 
-         // If not found by ID, check if there's an item with the same value
-         // (same name and price - assuming these determine if products are equivalent)
          const sameValueItemIndex = prevItems.findIndex(
             (item) =>
                item.name === standardizedProduct.name && item.price === standardizedProduct.price
          );
 
          if (sameValueItemIndex >= 0) {
-            // Combine with the existing item that has the same value
+            const currentQuantity = prevItems[sameValueItemIndex].quantity;
+            const requestedQuantity = standardizedProduct.quantity;
+            const newQuantity = Math.min(
+               currentQuantity + requestedQuantity,
+               MAX_QUANTITY_PER_ITEM
+            );
+
+            if (currentQuantity + requestedQuantity > MAX_QUANTITY_PER_ITEM) {
+               showMaxQuantityAlert();
+            }
+
             const updatedItems = [...prevItems];
             updatedItems[sameValueItemIndex] = {
                ...updatedItems[sameValueItemIndex],
-               quantity: updatedItems[sameValueItemIndex].quantity + standardizedProduct.quantity,
+               quantity: newQuantity,
             };
             return updatedItems;
          }
 
-         // If it's a completely new item (by ID and value), add it
+         if (standardizedProduct.quantity > MAX_QUANTITY_PER_ITEM) {
+            standardizedProduct.quantity = MAX_QUANTITY_PER_ITEM;
+            showMaxQuantityAlert();
+         }
+
          return [...prevItems, standardizedProduct];
       });
    };
 
-   // Update quantity of an item
    const updateQuantity = (id, quantity) => {
       if (quantity <= 0) {
          removeItem(id);
          return;
+      }
+
+      if (quantity > MAX_QUANTITY_PER_ITEM) {
+         quantity = MAX_QUANTITY_PER_ITEM;
+         showMaxQuantityAlert();
       }
 
       setCartItems((prevItems) =>
@@ -78,17 +112,14 @@ export const CartProvider = ({ children }) => {
       );
    };
 
-   // Remove item from cart
    const removeItem = (id) => {
       setCartItems((prevItems) => prevItems.filter((item) => item.id !== id));
    };
 
-   // Clear entire cart
    const clearCart = () => {
       setCartItems([]);
    };
 
-   // Calculate cart totals
    const getCartTotal = () => {
       return {
          items: cartItems.reduce((total, item) => total + item.quantity, 0),
@@ -105,6 +136,7 @@ export const CartProvider = ({ children }) => {
             removeItem,
             clearCart,
             getCartTotal,
+            maxQuantityPerItem: MAX_QUANTITY_PER_ITEM,
          }}
       >
          {children}

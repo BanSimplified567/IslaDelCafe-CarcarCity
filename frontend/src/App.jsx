@@ -27,6 +27,7 @@ const Users = lazy(() => import('@pages/admin/Users'));
 const OrderConfirmation = lazy(() => import('@pages/user/OrderConfirmation'));
 
 import { CartProvider } from '@pages/user/CartContext';
+const Register = lazy(() => import('@pages/admin/Register'));
 
 // Lazy load navbar components
 const NavbarMain = lazy(() => import('@components/NavbarMain'));
@@ -36,21 +37,58 @@ const NavbarAdmin = lazy(() => import('@components/NavbarAdmin'));
 const PageLoader = () => (
    <div className="flex items-center justify-center h-screen bg-amber-50">
       <div className="text-center">
-         <div className="inline-block w-8 h-8 border-4 border-amber-700 border-t-transparent rounded-full animate-spin"></div>
-         <p className="mt-2 text-amber-800 font-medium">Loading...</p>
+         {/* Coffee cup icon with animated steam */}
+         <div className="relative inline-block">
+            {/* Cup */}
+            <div className="w-16 h-16 bg-amber-800 rounded-b-full border-t-4 border-amber-700"></div>
+            {/* Handle */}
+            <div className="absolute right-[-12px] top-4 w-4 h-8 border-4 border-amber-700 rounded-full"></div>
+            {/* Steam */}
+            <div className="absolute top-[-20px] left-1/2 transform -translate-x-1/2 flex flex-col gap-1">
+               <div className="w-1 h-4 bg-amber-300 rounded-full animate-steam"></div>
+               <div className="w-1 h-4 bg-amber-300 rounded-full animate-steam delay-200"></div>
+               <div className="w-1 h-4 bg-amber-300 rounded-full animate-steam delay-400"></div>
+            </div>
+         </div>
+
+         <p className="mt-4 text-amber-800 font-semibold text-5xl tracking-wide">
+            Isla Del Cafe...
+         </p>
+
+         {/* Tailwind custom animation */}
+         <style>{`
+        @keyframes rise {
+          0% { transform: translateY(0); opacity: 0.3; }
+          50% { opacity: 1; }
+          100% { transform: translateY(-20px); opacity: 0; }
+        }
+
+        .animate-steam {
+          animation: rise 1.2s infinite ease-in-out;
+        }
+
+        .delay-200 {
+          animation-delay: 0.2s;
+        }
+
+        .delay-400 {
+          animation-delay: 0.4s;
+        }
+      `}</style>
       </div>
    </div>
 );
-
 const RootLayout = () => {
    const location = useLocation();
    const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
    const [isMobile, setIsMobile] = useState(false);
 
-   // Check if current route is a login page
-   const isLoginPage = location.pathname === '/' || location.pathname === '/loginadmin';
+   // ✅ Include registeradmin as a login page
+   const isLoginPage =
+      location.pathname === '/' ||
+      location.pathname === '/loginadmin' ||
+      location.pathname === '/registeradmin';
 
-   // Check if current route is an admin page
    const isAdminPage =
       location.pathname.startsWith('/admin') ||
       location.pathname.startsWith('/dashboard') ||
@@ -61,26 +99,18 @@ const RootLayout = () => {
       location.pathname.startsWith('/products') ||
       location.pathname.startsWith('/users');
 
-   // Responsive handler
    useEffect(() => {
       const handleResize = () => {
          setIsMobile(window.innerWidth < 768);
       };
 
-      // Initial check
       handleResize();
-
-      // Add event listener
       window.addEventListener('resize', handleResize);
-
-      // Close mobile nav when changing routes
       setIsMobileNavOpen(false);
 
-      // Cleanup on unmount
       return () => window.removeEventListener('resize', handleResize);
    }, [location.pathname]);
 
-   // If it's a login page, don't show any navbar
    if (isLoginPage) {
       return (
          <div className="login-page">
@@ -89,7 +119,6 @@ const RootLayout = () => {
       );
    }
 
-   // For regular pages
    return (
       <main>
          {!isAdminPage && (
@@ -98,7 +127,6 @@ const RootLayout = () => {
             </div>
          )}
 
-         {/* Main content area */}
          <div className={`content-container ${isMobile && !isMobileNavOpen ? 'full-width' : ''}`}>
             <Outlet />
          </div>
@@ -123,6 +151,7 @@ export const router = createBrowserRouter([
          // Auth routes
          { path: '/', element: <Login /> },
          { path: '/loginadmin', element: <LoginAdmin /> },
+         { path: '/registeradmin', element: <Register /> },
 
          // Regular pages
          { path: '/index', element: <Index /> },
@@ -140,7 +169,6 @@ export const router = createBrowserRouter([
             element: <AdminLayout />,
             children: [
                { path: '/dashboard', element: <Dashboard /> },
-
                { path: '/admin', element: <Admin /> },
                { path: '/employees', element: <Employees /> },
                { path: '/inventory', element: <Inventory /> },
