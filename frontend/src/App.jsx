@@ -27,7 +27,8 @@ const Users = lazy(() => import('@pages/admin/Users'));
 const OrderConfirmation = lazy(() => import('@pages/user/OrderConfirmation'));
 
 import { CartProvider } from '@pages/user/CartContext';
-const Register = lazy(() => import('@pages/admin/Register'));
+const RegisterAdmin = lazy(() => import('@pages/admin/RegisterAdmin'));
+const RegisterUsers = lazy(() => import('@pages/user/RegisterUsers'));
 
 // Lazy load navbar components
 const NavbarMain = lazy(() => import('@components/NavbarMain'));
@@ -87,7 +88,8 @@ const RootLayout = () => {
    const isLoginPage =
       location.pathname === '/' ||
       location.pathname === '/loginadmin' ||
-      location.pathname === '/registeradmin';
+      location.pathname === '/registeradmin' ||
+      location.pathname === '/registerusers';
 
    const isAdminPage =
       location.pathname.startsWith('/admin') ||
@@ -151,8 +153,8 @@ export const router = createBrowserRouter([
          // Auth routes
          { path: '/', element: <Login /> },
          { path: '/loginadmin', element: <LoginAdmin /> },
-         { path: '/registeradmin', element: <Register /> },
-
+         { path: '/registeradmin', element: <RegisterAdmin /> },
+         { path: '/registerusers', element: <RegisterUsers /> },
          // Regular pages
          { path: '/index', element: <Index /> },
          { path: '/menu', element: <Menu /> },

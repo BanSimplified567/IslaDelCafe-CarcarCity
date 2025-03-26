@@ -190,17 +190,6 @@ function Checkout() {
                         <div className="checkout-payment-option">
                            <input
                               type="radio"
-                              id="credit-card"
-                              name="paymentMethod"
-                              value="credit-card"
-                              checked={formData.paymentMethod === 'credit-card'}
-                              onChange={handleChange}
-                           />
-                           <label htmlFor="credit-card">Credit Card</label>
-                        </div>
-                        <div className="checkout-payment-option">
-                           <input
-                              type="radio"
                               id="cash"
                               name="paymentMethod"
                               value="cash"

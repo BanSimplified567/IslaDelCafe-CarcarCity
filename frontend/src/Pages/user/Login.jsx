@@ -1,6 +1,6 @@
+import '@style/Login.css'; // Import the CSS file
 import { Coffee, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
-import '@style/Login.css'; // Import the CSS file
 
 function Login() {
    const [email, setEmail] = useState('');
@@ -88,8 +88,8 @@ function Login() {
             </div>
 
             <div className="loginAdminFooter">
-               Need an account?{' '}
-               <a href="#" className="loginAdminLink">
+               Need an account?
+               <a href="/registerusers" className="loginAdminLink">
                   Register here
                </a>
             </div>
