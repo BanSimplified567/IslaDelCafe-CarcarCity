@@ -1,47 +1,37 @@
+import { useAuth } from '@context/AuthContext'; // Adjust the import path
 import '@style/NavbarMain.css';
-import { Menu, ShoppingCart, User, X } from 'lucide-react';
+import { LogOut, Menu, ShoppingCart, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 
 function NavbarMain() {
    const [menuOpen, setMenuOpen] = useState(false);
-   const [isLoggedIn, setIsLoggedIn] = useState(false);
    const [isScrolled, setIsScrolled] = useState(false);
+   const { isLoggedIn, logout } = useAuth();
+   const navigate = useNavigate(); // ✅ For programmatic navigation
 
-   // Handle scroll event to change header appearance when scrolled
    useEffect(() => {
       const handleScroll = () => {
-         if (window.scrollY > 50) {
-            setIsScrolled(true);
-         } else {
-            setIsScrolled(false);
-         }
+         setIsScrolled(window.scrollY > 50);
       };
 
-      // Initial check
-      handleScroll();
-
-      // Add event listener
       window.addEventListener('scroll', handleScroll);
-
-      // Clean up event listener on component unmount
-      return () => {
-         window.removeEventListener('scroll', handleScroll);
-      };
+      return () => window.removeEventListener('scroll', handleScroll);
    }, []);
 
-   // Close mobile menu when clicking a link
    const handleNavLinkClick = () => {
-      if (menuOpen) {
-         setMenuOpen(false);
-      }
+      if (menuOpen) setMenuOpen(false);
+   };
+
+   const handleLogout = () => {
+      logout(); // Clear user session
+      navigate('/'); // Redirect to login page
    };
 
    return (
       <header className={`index-header ${isScrolled ? 'index-header-scrolled' : ''}`}>
          <div className="index-IslaDelCafe-Logo-title">IslaDelCafe</div>
 
-         {/* Navigation */}
          <nav className={`index-nav ${menuOpen ? 'index-nav-open' : 'index-nav-closed'}`}>
             <ul className="index-nav-list">
                <li className="index-nav-list-item">
@@ -83,16 +73,18 @@ function NavbarMain() {
             </ul>
          </nav>
 
-         {/* Search & Sign In / User Account Section */}
          <div className="index-search-signin">
             {isLoggedIn ? (
                <div className="index-user-actions">
                   <NavLink to="/cart" className="index-icon-button">
-                     <ShoppingCart className="index-icon" />
+                     <ShoppingCart />
                   </NavLink>
                   <NavLink to="/profile" className="index-icon-button">
-                     <User className="index-icon" />
+                     <User />
                   </NavLink>
+                  <button onClick={handleLogout} className="index-icon-button" title="Logout">
+                     <LogOut />
+                  </button>
                </div>
             ) : (
                <NavLink to="/" className="index-icon-button index-signin-button">
@@ -101,17 +93,12 @@ function NavbarMain() {
             )}
          </div>
 
-         {/* Mobile Menu Toggle - Keep at the end for proper order in mobile view */}
          <button
             className="index-mobile-menu-toggle"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
          >
-            {menuOpen ? (
-               <X className="index-mobile-menu-icon" />
-            ) : (
-               <Menu className="index-mobile-menu-icon" />
-            )}
+            {menuOpen ? <X /> : <Menu />}
          </button>
       </header>
    );

@@ -1,14 +1,42 @@
-import '@style/Login.css'; // Import the CSS file
+import { useAuth } from '@context/AuthContext'; // adjust the import path as needed
+import '@style/Login.css';
+import axios from 'axios';
 import { Coffee, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
    const [showPassword, setShowPassword] = useState(false);
+   const [error, setError] = useState('');
+   const [success, setSuccess] = useState('');
+   const navigate = useNavigate();
+   const { login } = useAuth();
 
-   const handleLogin = () => {
-      console.log('Logging in with', { email, password });
+   const handleLogin = async () => {
+      try {
+         const response = await axios.post('api/users.php?action=login', {
+            email,
+            password,
+         });
+
+         const result = response.data;
+
+         if (result.success) {
+            setSuccess(result.message);
+            setError('');
+            login(result.user); // 🔐 Save login to context
+            navigate('/index');
+         } else {
+            setError(result.message);
+            setSuccess('');
+         }
+      } catch (err) {
+         console.error('Login failed:', err);
+         setError('Login failed. Please try again.');
+         setSuccess('');
+      }
    };
 
    const togglePasswordVisibility = () => {
@@ -25,6 +53,8 @@ function Login() {
             </div>
 
             <div className="loginAdminForm">
+               {error && <p className="loginAdminError">{error}</p>}
+               {success && <p className="loginAdminSuccess">{success}</p>}
                <div className="loginAdminFormGroup">
                   <label htmlFor="email" className="loginAdminLabel">
                      Email
@@ -32,7 +62,7 @@ function Login() {
                   <input
                      id="email"
                      type="email"
-                     placeholder="barista@example.com"
+                     placeholder="Enter your email..."
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
                      className="loginAdminInput"
@@ -88,7 +118,7 @@ function Login() {
             </div>
 
             <div className="loginAdminFooter">
-               Need an account?
+               Need an account?{' '}
                <a href="/registerusers" className="loginAdminLink">
                   Register here
                </a>

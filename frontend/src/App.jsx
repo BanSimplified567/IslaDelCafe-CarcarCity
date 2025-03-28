@@ -1,3 +1,4 @@
+import { AuthProvider } from '@context/AuthContext';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider, useLocation } from 'react-router-dom';
 
@@ -191,9 +192,12 @@ export const router = createBrowserRouter([
 function App() {
    return (
       <Suspense fallback={<PageLoader />}>
-         <CartProvider>
-            <RouterProvider router={router}></RouterProvider>
-         </CartProvider>
+         <AuthProvider>
+            {/* Wrap the application in AuthProvider */}
+            <CartProvider>
+               <RouterProvider router={router}></RouterProvider>
+            </CartProvider>
+         </AuthProvider>
       </Suspense>
    );
 }

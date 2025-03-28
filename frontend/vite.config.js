@@ -19,6 +19,7 @@ export default defineConfig({
          '@assets': path.resolve(__dirname, 'src/assets'),
          '@style': path.resolve(__dirname, 'src/style'),
          '@public': path.resolve(__dirname, 'public/assets'),
+         '@context': path.resolve(__dirname, 'src/context/'),
       },
    },
    server: {

@@ -53,7 +53,7 @@ function Login() {
                   <input
                      id="email"
                      type="email"
-                     placeholder="email@example.com"
+                     placeholder="barista@example.com"
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
                      className="loginAdminInput"

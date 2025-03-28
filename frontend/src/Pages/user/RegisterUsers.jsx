@@ -6,13 +6,18 @@ import { useNavigate } from 'react-router-dom';
 
 function RegisterUser() {
    const navigate = useNavigate();
+   const [loading, setLoading] = useState(false);
 
    const [formData, setFormData] = useState({
-      name: '',
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
       confirmPassword: '',
-      number: '',
+      phone: '',
+      address: '',
+      city: '',
+      zipCode: '',
       termsAccepted: false,
    });
 
@@ -27,39 +32,48 @@ function RegisterUser() {
          [name]: type === 'checkbox' ? checked : value,
       }));
    };
-
    const handleSubmit = async (e) => {
       e.preventDefault();
-
       setError('');
       setSuccess('');
+      setLoading(true);
 
       if (formData.password !== formData.confirmPassword) {
          setError('Passwords do not match.');
+         setLoading(false);
          return;
       }
 
       if (!formData.termsAccepted) {
          setError('Please accept the terms and conditions.');
+         setLoading(false);
          return;
       }
 
       try {
-         const response = await axios.post('/api/registerUsers.php', {
-            name: formData.name,
+         const response = await axios.post('/api/users.php?action=register', {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
             email: formData.email,
             password: formData.password,
-            number: formData.number,
+            phone: formData.phone,
+            address: formData.address,
+            city: formData.city,
+            zipCode: formData.zipCode,
          });
 
          if (response.data.success) {
             setSuccess('Registration successful!');
             setFormData({
-               name: '',
+               firstName: '',
+               lastName: '',
                email: '',
                password: '',
                confirmPassword: '',
-               number: '',
+               phone: '',
+               address: '',
+               city: '',
+               zipCode: '',
                termsAccepted: false,
             });
          } else {
@@ -68,6 +82,8 @@ function RegisterUser() {
       } catch (err) {
          console.error(err);
          setError('Server error. Please try again.');
+      } finally {
+         setLoading(false);
       }
    };
 
@@ -84,15 +100,30 @@ function RegisterUser() {
             {success && <p className="registerAdminSuccess">{success}</p>}
 
             <div className="registerAdminFormGroup">
-               <label>Name</label>
+               <label>First Name</label>
                <div className="registerAdminInputWrapper">
                   <User className="registerAdminInputIcon" size={20} />
                   <input
                      type="text"
-                     name="name"
-                     value={formData.name}
+                     name="firstName"
+                     value={formData.firstName}
                      onChange={handleChange}
-                     placeholder="Enter your full name"
+                     placeholder="Enter your first name"
+                     required
+                  />
+               </div>
+            </div>
+
+            <div className="registerAdminFormGroup">
+               <label>Last Name</label>
+               <div className="registerAdminInputWrapper">
+                  <User className="registerAdminInputIcon" size={20} />
+                  <input
+                     type="text"
+                     name="lastName"
+                     value={formData.lastName}
+                     onChange={handleChange}
+                     placeholder="Enter your last name"
                      required
                   />
                </div>
@@ -107,22 +138,61 @@ function RegisterUser() {
                      name="email"
                      value={formData.email}
                      onChange={handleChange}
-                     placeholder="Enter your email address"
+                     placeholder="Enter your email"
                      required
                   />
                </div>
             </div>
 
             <div className="registerAdminFormGroup">
-               <label>Phone Number</label>
+               <label>Phone</label>
                <div className="registerAdminInputWrapper">
                   <Phone className="registerAdminInputIcon" size={20} />
                   <input
                      type="tel"
-                     name="number"
-                     value={formData.number}
+                     name="phone"
+                     value={formData.phone}
                      onChange={handleChange}
                      placeholder="Enter your phone number"
+                  />
+               </div>
+            </div>
+
+            <div className="registerAdminFormGroup">
+               <label>Address</label>
+               <div className="registerAdminInputWrapper">
+                  <input
+                     type="text"
+                     name="address"
+                     value={formData.address}
+                     onChange={handleChange}
+                     placeholder="Enter your address"
+                  />
+               </div>
+            </div>
+
+            <div className="registerAdminFormGroup">
+               <label>City</label>
+               <div className="registerAdminInputWrapper">
+                  <input
+                     type="text"
+                     name="city"
+                     value={formData.city}
+                     onChange={handleChange}
+                     placeholder="Enter your city"
+                  />
+               </div>
+            </div>
+
+            <div className="registerAdminFormGroup">
+               <label>Zip Code</label>
+               <div className="registerAdminInputWrapper">
+                  <input
+                     type="text"
+                     name="zipCode"
+                     value={formData.zipCode}
+                     onChange={handleChange}
+                     placeholder="Enter your zip code"
                   />
                </div>
             </div>
@@ -182,15 +252,15 @@ function RegisterUser() {
                </div>
             </div>
 
-            <button type="submit" className="registerAdminButton">
-               Register
+            <button type="submit" className="registerAdminButton" disabled={loading}>
+               {loading ? 'Registering...' : 'Register'}
             </button>
 
             <div className="registerAdminFooter">
                Already have an account?
                <button
                   type="button"
-                  onClick={() => navigate('/loginuser')}
+                  onClick={() => navigate('/')}
                   className="registerAdminLink"
                >
                   Sign in
