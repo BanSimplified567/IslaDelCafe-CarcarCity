@@ -3,21 +3,22 @@ import axios from 'axios';
 import { Coffee, Eye, EyeOff, Lock, Mail, Phone, User } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
 function RegisterUser() {
    const navigate = useNavigate();
    const [loading, setLoading] = useState(false);
 
    const [formData, setFormData] = useState({
-      firstName: '',
-      lastName: '',
+      first_name: '',
+      last_name: '',
       email: '',
       password: '',
       confirmPassword: '',
       phone: '',
       address: '',
       city: '',
-      zipCode: '',
+      zipcode: '',
       termsAccepted: false,
    });
 
@@ -32,6 +33,7 @@ function RegisterUser() {
          [name]: type === 'checkbox' ? checked : value,
       }));
    };
+
    const handleSubmit = async (e) => {
       e.preventDefault();
       setError('');
@@ -52,29 +54,24 @@ function RegisterUser() {
 
       try {
          const response = await axios.post('/api/users.php?action=register', {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
+            first_name: formData.first_name,
+            last_name: formData.last_name,
             email: formData.email,
             password: formData.password,
             phone: formData.phone,
             address: formData.address,
             city: formData.city,
-            zipCode: formData.zipCode,
+            zipcode: formData.zipcode,
          });
 
          if (response.data.success) {
-            setSuccess('Registration successful!');
-            setFormData({
-               firstName: '',
-               lastName: '',
-               email: '',
-               password: '',
-               confirmPassword: '',
-               phone: '',
-               address: '',
-               city: '',
-               zipCode: '',
-               termsAccepted: false,
+            Swal.fire({
+               icon: 'success',
+               title: 'Registration Successful!',
+               text: 'You can now login to your account.',
+               confirmButtonColor: '#6f4e37',
+            }).then(() => {
+               navigate('/');
             });
          } else {
             setError(response.data.message || 'Registration failed.');
@@ -105,8 +102,8 @@ function RegisterUser() {
                   <User className="registerAdminInputIcon" size={20} />
                   <input
                      type="text"
-                     name="firstName"
-                     value={formData.firstName}
+                     name="first_name"
+                     value={formData.first_name}
                      onChange={handleChange}
                      placeholder="Enter your first name"
                      required
@@ -120,8 +117,8 @@ function RegisterUser() {
                   <User className="registerAdminInputIcon" size={20} />
                   <input
                      type="text"
-                     name="lastName"
-                     value={formData.lastName}
+                     name="last_name"
+                     value={formData.last_name}
                      onChange={handleChange}
                      placeholder="Enter your last name"
                      required
@@ -189,8 +186,8 @@ function RegisterUser() {
                <div className="registerAdminInputWrapper">
                   <input
                      type="text"
-                     name="zipCode"
-                     value={formData.zipCode}
+                     name="zipcode"
+                     value={formData.zipcode}
                      onChange={handleChange}
                      placeholder="Enter your zip code"
                   />
@@ -258,11 +255,7 @@ function RegisterUser() {
 
             <div className="registerAdminFooter">
                Already have an account?
-               <button
-                  type="button"
-                  onClick={() => navigate('/')}
-                  className="registerAdminLink"
-               >
+               <button type="button" onClick={() => navigate('/')} className="registerAdminLink">
                   Sign in
                </button>
             </div>

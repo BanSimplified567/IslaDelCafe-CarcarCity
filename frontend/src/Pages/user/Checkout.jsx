@@ -1,4 +1,5 @@
 import '@style/Checkout.css';
+import axios from 'axios';
 import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -33,7 +34,7 @@ function Checkout() {
    };
 
    // Handle order submission
-   const handleSubmit = (e) => {
+   const handleSubmit = async (e) => {
       e.preventDefault();
 
       // Basic validation
@@ -46,32 +47,40 @@ function Checkout() {
          return;
       }
 
-      // Process order (in a real app, this would send data to a server)
-      const orderData = {
-         customer: formData,
-         items: cartItems,
-         totals: {
-            subtotal,
-            shipping,
-            total,
-         },
-         orderDate: new Date().toISOString(),
-         orderNumber: 'ORD-' + Math.floor(100000 + Math.random() * 900000), // Generate random order number
-      };
+      try {
+         const orderData = {
+            customer: formData,
+            items: cartItems,
+            totals: {
+               subtotal,
+               shipping,
+               total,
+            },
+            paymentMethod: 'Cash on Delivery', // Fixed payment method
+            status: 'Pending', // Initial status
+         };
 
-      // Store order in session storage for confirmation page
-      sessionStorage.setItem('lastOrder', JSON.stringify(orderData));
+         const response = await axios.post('/api/saveorder.php', orderData);
 
-      // Show success message
-      Swal.fire({
-         icon: 'success',
-         title: 'Order Placed!',
-         text: `Thank you for your order! Your order number is ${orderData.orderNumber}.`,
-      }).then(() => {
-         // Clear cart and redirect to confirmation page
-         clearCart();
-         navigate('/order-confirmation');
-      });
+         if (response.data.success) {
+            sessionStorage.setItem('lastOrder', JSON.stringify(response.data.order));
+            clearCart();
+
+            Swal.fire({
+               icon: 'success',
+               title: 'Order Submitted!',
+               text: 'Your order has been submitted and is pending admin approval.',
+            }).then(() => {
+               navigate('/order-confirmation');
+            });
+         }
+      } catch (error) {
+         Swal.fire({
+            icon: 'error',
+            title: 'Order Failed',
+            text: error.response?.data?.message || 'Failed to submit order',
+         });
+      }
    };
 
    // Check if cart is empty

@@ -1,41 +1,21 @@
-import { useAuth } from '@context/AuthContext'; // adjust the import path as needed
+import { useAuthentication } from '@hooks/useAuthentication';
 import '@style/Login.css';
-import axios from 'axios';
 import { Coffee, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function Login() {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
    const [showPassword, setShowPassword] = useState(false);
-   const [error, setError] = useState('');
-   const [success, setSuccess] = useState('');
    const navigate = useNavigate();
-   const { login } = useAuth();
+   const { loading, handleUserLogin } = useAuthentication();
 
-   const handleLogin = async () => {
-      try {
-         const response = await axios.post('api/users.php?action=login', {
-            email,
-            password,
-         });
-
-         const result = response.data;
-
-         if (result.success) {
-            setSuccess(result.message);
-            setError('');
-            login(result.user); // 🔐 Save login to context
-            navigate('/index');
-         } else {
-            setError(result.message);
-            setSuccess('');
-         }
-      } catch (err) {
-         console.error('Login failed:', err);
-         setError('Login failed. Please try again.');
-         setSuccess('');
+   const handleSubmit = async (e) => {
+      e.preventDefault();
+      const result = await handleUserLogin(email, password);
+      if (result.success) {
+         navigate('/index');
       }
    };
 
@@ -52,9 +32,7 @@ function Login() {
                <p className="loginAdminSubtitle">Sign in to your account</p>
             </div>
 
-            <div className="loginAdminForm">
-               {error && <p className="loginAdminError">{error}</p>}
-               {success && <p className="loginAdminSuccess">{success}</p>}
+            <form className="loginAdminForm" onSubmit={handleSubmit}>
                <div className="loginAdminFormGroup">
                   <label htmlFor="email" className="loginAdminLabel">
                      Email
@@ -66,8 +44,11 @@ function Login() {
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
                      className="loginAdminInput"
+                     required
+                     disabled={loading}
                   />
                </div>
+
                <div className="loginAdminFormGroup">
                   <label htmlFor="password" className="loginAdminLabel">
                      Password
@@ -80,11 +61,14 @@ function Login() {
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         className="loginAdminInput"
+                        required
+                        disabled={loading}
                      />
                      <button
                         type="button"
                         onClick={togglePasswordVisibility}
                         className="loginAdminPasswordToggle"
+                        disabled={loading}
                      >
                         {showPassword ? (
                            <EyeOff className="loginAdminIcon" />
@@ -94,34 +78,47 @@ function Login() {
                      </button>
                   </div>
                </div>
+
                <div className="loginAdminOptions">
                   <div className="loginAdminRemember">
                      <input
                         id="remember-me"
-                        name="remember-me"
                         type="checkbox"
                         className="loginAdminCheckbox"
+                        disabled={loading}
                      />
                      <label htmlFor="remember-me" className="loginAdminCheckboxLabel">
                         Remember me
                      </label>
                   </div>
                   <div className="loginAdminForgot">
-                     <a href="#" className="loginAdminLink">
+                     <Link to="/forgot-password" className="loginAdminLink">
                         Forgot password?
-                     </a>
+                     </Link>
                   </div>
                </div>
-               <button onClick={handleLogin} className="loginAdminButton">
-                  Sign in
+
+               <button
+                  type="submit"
+                  className={`loginAdminButton ${loading ? 'loading' : ''}`}
+                  disabled={loading}
+               >
+                  {loading ? (
+                     <div className="loginAdminButtonLoading">
+                        <span className="loginAdminSpinner"></span>
+                        Signing in...
+                     </div>
+                  ) : (
+                     'Sign in'
+                  )}
                </button>
-            </div>
+            </form>
 
             <div className="loginAdminFooter">
                Need an account?{' '}
-               <a href="/registerusers" className="loginAdminLink">
+               <Link to="/registerusers" className="loginAdminLink">
                   Register here
-               </a>
+               </Link>
             </div>
          </div>
       </div>

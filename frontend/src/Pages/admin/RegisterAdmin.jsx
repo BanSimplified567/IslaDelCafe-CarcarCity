@@ -44,7 +44,7 @@ function Register() {
       }
 
       try {
-         const response = await axios.post('/api/registerAdmin.php', {
+         const response = await axios.post('/api/admin.php?action=register', {
             name: formData.name,
             email: formData.email,
             password: formData.password,
@@ -52,7 +52,7 @@ function Register() {
          });
 
          if (response.data.success) {
-            setSuccess('Registration successful!');
+            setSuccess('Registration submitted! Waiting for admin approval.');
             setFormData({
                name: '',
                email: '',
@@ -66,7 +66,7 @@ function Register() {
          }
       } catch (err) {
          console.error(err);
-         setError('Server error. Please try again.');
+         setError(err.response?.data?.message || 'Server error. Please try again.');
       }
    };
 

@@ -1,3 +1,4 @@
+import { ProtectedRoute } from '@components/ProtectedRoute';
 import { AuthProvider } from '@context/AuthContext';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider, useLocation } from 'react-router-dom';
@@ -12,7 +13,7 @@ const Cart = lazy(() => import('@pages/user/Cart'));
 const ProductDetails = lazy(() => import('@pages/user/ProductDetails'));
 const Checkout = lazy(() => import('@pages/user/Checkout'));
 const Profile = lazy(() => import('@pages/user/Profile'));
-const NotFound = lazy(() => import('@pages/Notfound')); // Ensure this path is correct
+const NotFound = lazy(() => import('@pages/Notfound'));
 
 // Admin Pages
 const LoginAdmin = lazy(() => import('@pages/admin/LogInAdmin'));
@@ -26,6 +27,8 @@ const Orders = lazy(() => import('@pages/admin/Orders'));
 const Products = lazy(() => import('@pages/admin/Products'));
 const Users = lazy(() => import('@pages/admin/Users'));
 const OrderConfirmation = lazy(() => import('@pages/user/OrderConfirmation'));
+const ProductManagement = lazy(() => import('@components/admin/ProductManagement'));
+const AdminApprovals = lazy(() => import('@pages/admin/AdminApprovals'));
 
 import { CartProvider } from '@pages/user/CartContext';
 const RegisterAdmin = lazy(() => import('@pages/admin/RegisterAdmin'));
@@ -85,7 +88,6 @@ const RootLayout = () => {
    const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
    const [isMobile, setIsMobile] = useState(false);
 
-   // ✅ Include registeradmin as a login page
    const isLoginPage =
       location.pathname === '/' ||
       location.pathname === '/loginadmin' ||
@@ -100,7 +102,8 @@ const RootLayout = () => {
       location.pathname.startsWith('/messages') ||
       location.pathname.startsWith('/orders') ||
       location.pathname.startsWith('/products') ||
-      location.pathname.startsWith('/users');
+      location.pathname.startsWith('/users') ||
+      location.pathname.startsWith('/admin-approvals');
 
    useEffect(() => {
       const handleResize = () => {
@@ -137,12 +140,17 @@ const RootLayout = () => {
    );
 };
 
-// Admin layout with NavbarAdmin and Outlet for admin pages
+// Admin layout with protected routes
 const AdminLayout = () => {
+   const [isCollapsed, setIsCollapsed] = useState(false);
+
    return (
-      <>
-         <NavbarAdmin />
-      </>
+      <div className="admin-layout">
+         <NavbarAdmin isCollapsed={isCollapsed} setIsCollapsed={setIsCollapsed} />
+         <div className="admin-content">
+            <Outlet />
+         </div>
+      </div>
    );
 };
 
@@ -156,14 +164,15 @@ export const router = createBrowserRouter([
          { path: '/loginadmin', element: <LoginAdmin /> },
          { path: '/registeradmin', element: <RegisterAdmin /> },
          { path: '/registerusers', element: <RegisterUsers /> },
-         // Regular pages
+
+         // Regular user pages
          { path: '/index', element: <Index /> },
          { path: '/menu', element: <Menu /> },
          { path: '/about', element: <About /> },
          { path: '/contact', element: <Contact /> },
          { path: '/checkout', element: <Checkout /> },
          { path: '/order-confirmation', element: <OrderConfirmation /> },
-         { path: '/product/:id', element: <ProductDetails /> }, // Updated route with parameter
+         { path: '/product/:id', element: <ProductDetails /> },
          { path: '/profile', element: <Profile /> },
          { path: '/cart', element: <Cart /> },
 
@@ -171,18 +180,33 @@ export const router = createBrowserRouter([
          {
             element: <AdminLayout />,
             children: [
-               { path: '/dashboard', element: <Dashboard /> },
+               {
+                  path: '/dashboard',
+                  element: (
+                     <ProtectedRoute requireAdmin>
+                        <Dashboard />
+                     </ProtectedRoute>
+                  ),
+               },
                { path: '/admin', element: <Admin /> },
                { path: '/employees', element: <Employees /> },
                { path: '/inventory', element: <Inventory /> },
                { path: '/messages', element: <Messages /> },
                { path: '/orders', element: <Orders /> },
-               { path: '/products', element: <Products /> },
+               {
+                  path: '/products',
+                  element: <Products />,
+                  children: [{ path: 'manage', element: <ProductManagement /> }],
+               },
                { path: '/users', element: <Users /> },
+               {
+                  path: '/admin-approvals',
+                  element: <AdminApprovals />,
+               },
             ],
          },
 
-         // 404 - This must be the last route
+         // 404 route
          { path: '*', element: <NotFound /> },
       ],
    },
@@ -193,7 +217,6 @@ function App() {
    return (
       <Suspense fallback={<PageLoader />}>
          <AuthProvider>
-            {/* Wrap the application in AuthProvider */}
             <CartProvider>
                <RouterProvider router={router}></RouterProvider>
             </CartProvider>

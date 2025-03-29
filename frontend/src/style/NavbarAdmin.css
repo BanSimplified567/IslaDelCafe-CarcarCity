@@ -1,4 +1,4 @@
-/* Dashboard.css - Updated styles for NavbarAdmins component */
+/* NavbarAdmin Styles */
 .navbaradmin-item {
   display: flex;
   align-items: center;
@@ -48,13 +48,7 @@
   display: none;
 }
 
-/* Layout Container */
-.admin-layout {
-  display: flex;
-  min-height: 100vh;
-  width: 100%;
-  position: relative;
-}
+
 
 /* Base Sidebar Styles */
 .navbaradmin {
@@ -65,15 +59,63 @@
   width: 250px;
   background-color: #1e1e2d;
   color: #fff;
-  transition: width 0.3s ease;
+  transition: all 0.3s ease;
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   z-index: 100;
+  overflow-x: hidden;
 }
 
 .navbaradmin-collapsed {
   width: 60px;
+}
+
+/* Add styles for admin layout */
+.admin-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.admin-content {
+  flex: 1;
+  margin-left: 250px;
+  /* Same as navbar width */
+  transition: margin-left 0.3s ease;
+  padding: 20px;
+}
+
+/* When navbar is collapsed, adjust content margin */
+.navbaradmin-collapsed+.admin-content {
+  margin-left: 60px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .navbaradmin {
+    width: 60px;
+  }
+
+  .admin-content {
+    margin-left: 60px;
+  }
+
+  .navbaradmin-collapsed {
+    width: 0;
+    overflow: hidden;
+  }
+
+  .navbaradmin-collapsed+.admin-content {
+    margin-left: 0;
+  }
+
+  .nav-label {
+    display: none;
+  }
+
+  .navbaradmin-brand h2 {
+    display: none;
+  }
 }
 
 /* Sidebar Brand/Logo Section */
@@ -118,7 +160,6 @@
   width: 24px;
   height: 24px;
   background-color: #f97316;
-  /* orange-500 */
   color: white;
   border: none;
   border-radius: 50%;
@@ -129,6 +170,11 @@
   font-size: 12px;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
   z-index: 101;
+  transition: transform 0.3s ease;
+}
+
+.navbaradmin-collapsed .navbaradmin-toggle {
+  transform: rotate(180deg);
 }
 
 /* Navigation Menu */
@@ -207,44 +253,4 @@
 .navbaradmin-menu::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.2);
   border-radius: 5px;
-}
-
-/* Content Area Styles */
-.content {
-  flex: 1;
-  padding: 20px;
-  margin-left: 250px;
-  /* Match sidebar width */
-  transition: margin-left 0.3s ease, width 0.3s ease;
-  min-height: 100vh;
-  width: calc(100% - 250px);
-}
-
-.content-expanded {
-  margin-left: 60px;
-  /* Match collapsed sidebar width */
-  width: calc(100% - 60px);
-}
-
-/* Mobile Responsive Styles */
-@media (max-width: 767px) {
-  .navbaradmin {
-    width: 250px;
-    transform: translateX(-100%);
-  }
-
-  .navbaradmin-collapsed {
-    transform: translateX(0);
-    width: 60px;
-  }
-
-  .content {
-    margin-left: 0;
-    width: 100%;
-  }
-
-  .content-expanded {
-    margin-left: 60px;
-    width: calc(100% - 60px);
-  }
 }

@@ -1,23 +1,29 @@
 // Dashboard.jsx
-import { ShoppingBag } from 'lucide-react';
-import React, { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-   Area,
-   CartesianGrid,
-   Line,
-   LineChart,
-   ResponsiveContainer,
-   Tooltip,
-   XAxis,
-   YAxis,
-} from 'recharts';
+import DashboardSummary from '@components/admin/DashboardSummary';
+import SalesChart from '@components/admin/SalesChart';
+import { useAuth } from '@context/AuthContext';
 import '@style/Dashboard.css';
+import axios from 'axios';
+import { Coffee, Package, ShoppingBag, Users } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Import our new Sidebar component
 
 function Dashboard() {
+   const { admin } = useAuth();
+   const [stats, setStats] = useState({
+      totalOrders: 0,
+      pendingOrders: 0,
+      totalProducts: 0,
+      totalUsers: 0,
+      recentOrders: [],
+      topProducts: [],
+   });
+   const [loading, setLoading] = useState(true);
    const navigate = useNavigate();
+   const [chartPeriod, setChartPeriod] = useState('week');
+   const [isCollapsed, setIsCollapsed] = useState(false);
 
    const handleClick = () => {
       navigate('/orders');
@@ -73,300 +79,163 @@ function Dashboard() {
       };
    }, []);
 
+   useEffect(() => {
+      fetchDashboardStats();
+   }, []);
+
+   const fetchDashboardStats = async () => {
+      try {
+         const response = await axios.get('/api/dashboard_stats.php');
+         if (response.data.success) {
+            setStats(response.data.stats);
+         }
+      } catch (error) {
+         console.error('Error fetching dashboard stats:', error);
+      } finally {
+         setLoading(false);
+      }
+   };
+
+   if (loading) {
+      return (
+         <div className="dashboard-loading">
+            <div className="spinner"></div>
+            <p>Loading dashboard...</p>
+         </div>
+      );
+   }
+
    return (
-      <div>
-         <div className="dashboard-main-content">
+      <div className={`content ${isCollapsed ? 'content-expanded' : ''}`}>
+         <div className="dashboard-container">
             <div className="dashboard-header">
-               <div className="dashboard-page-title">
-                  <h1>Dashboard</h1>
-                  <div className="dashboard-page-subtitle">
-                     Welcome back, John! Here's what's happening today.
+               <h1>Welcome back, {admin?.name}</h1>
+               <p>Here's what's happening with your store today.</p>
+            </div>
+
+            {/* Quick Summary */}
+            <DashboardSummary />
+
+            {/* Stats Cards */}
+            <div className="dashboard-stats">
+               <div className="stat-card">
+                  <div className="stat-icon orders">
+                     <ShoppingBag size={24} />
+                  </div>
+                  <div className="stat-details">
+                     <h3>Total Orders</h3>
+                     <p className="stat-value">{stats.totalOrders}</p>
+                     <span className="stat-label">All time orders</span>
                   </div>
                </div>
 
-               <div className="dashboard-header-actions">
-                  <div className="dashboard-search-box">
-                     <i>🔍</i>
-                     <input type="text" placeholder="Search..." />
+               <div className="stat-card">
+                  <div className="stat-icon pending">
+                     <Coffee size={24} />
                   </div>
-
-                  <div className="dashboard-notification-bell">
-                     <div className="dashboard-icon">🔔</div>
-                     <div className="dashboard-notification-dot"></div>
+                  <div className="stat-details">
+                     <h3>Pending Orders</h3>
+                     <p className="stat-value">{stats.pendingOrders}</p>
+                     <span className="stat-label">Needs attention</span>
                   </div>
+               </div>
 
-                  <div className="dashboard-user-profile">
-                     <div className="dashboard-avatar">JD</div>
-                     <div className="dashboard-user-info">
-                        <div className="dashboard-name">John Doe</div>
-                        <div className="dashboard-role">Manager</div>
-                     </div>
+               <div className="stat-card">
+                  <div className="stat-icon products">
+                     <Package size={24} />
+                  </div>
+                  <div className="stat-details">
+                     <h3>Products</h3>
+                     <p className="stat-value">{stats.totalProducts}</p>
+                     <span className="stat-label">In stock</span>
+                  </div>
+               </div>
+
+               <div className="stat-card">
+                  <div className="stat-icon users">
+                     <Users size={24} />
+                  </div>
+                  <div className="stat-details">
+                     <h3>Users</h3>
+                     <p className="stat-value">{stats.totalUsers}</p>
+                     <span className="stat-label">Registered users</span>
                   </div>
                </div>
             </div>
 
-            <div className="dashboard-stats-cards">
-               <div className="dashboard-stat-card">
-                  <div className="dashboard-stat-card-header">
-                     <div>
-                        <div className="dashboard-stat-card-title">Total Sales</div>
-                        <div className="dashboard-stat-card-value">$12,548</div>
-                     </div>
-                     <div className="dashboard-stat-card-icon dashboard-sales">💰</div>
-                  </div>
-                  <div className="dashboard-stat-card-trend dashboard-trend-up">
-                     <span>▲ 12.5%</span> vs last month
-                  </div>
+            {/* Recent Orders */}
+            <div className="dashboard-section">
+               <div className="section-header">
+                  <h2>Recent Orders</h2>
+                  <Link to="/orders" className="view-all">
+                     View All
+                  </Link>
                </div>
-
-               <div className="dashboard-stat-card">
-                  <div className="dashboard-stat-card-header">
-                     <div>
-                        <div className="dashboard-stat-card-title">Total Orders</div>
-                        <div className="dashboard-stat-card-value">584</div>
-                     </div>
-                     <div className="dashboard-stat-card-icon dashboard-orders">🛒</div>
-                  </div>
-                  <div className="dashboard-stat-card-trend dashboard-trend-up">
-                     <span>▲ 8.2%</span> vs last month
-                  </div>
-               </div>
-
-               <div className="dashboard-stat-card">
-                  <div className="dashboard-stat-card-header">
-                     <div>
-                        <div className="dashboard-stat-card-title">New Customers</div>
-                        <div className="dashboard-stat-card-value">129</div>
-                     </div>
-                     <div className="dashboard-stat-card-icon dashboard-customers">👥</div>
-                  </div>
-                  <div className="dashboard-stat-card-trend dashboard-trend-up">
-                     <span>▲ 5.7%</span> vs last month
-                  </div>
-               </div>
-
-               <div className="dashboard-stat-card">
-                  <div className="dashboard-stat-card-header">
-                     <div>
-                        <div className="dashboard-stat-card-title">Avg. Order Value</div>
-                        <div className="dashboard-stat-card-value">$21.50</div>
-                     </div>
-                     <div className="dashboard-stat-card-icon dashboard-revenue">📈</div>
-                  </div>
-                  <div className="dashboard-stat-card-trend dashboard-trend-down">
-                     <span>▼ 2.1%</span> vs last month
-                  </div>
-               </div>
-            </div>
-
-            <div className="dashboard-grid">
-               <div className="dashboard-sales-chart">
-                  <div className="dashboard-card-header">
-                     <div className="dashboard-card-title">Sales Overview</div>
-                     <div className="dashboard-time-filter">
-                        <button className="dashboard-filter-btn">Day</button>
-                        <button className="dashboard-filter-btn">Week</button>
-                        <button className="dashboard-filter-btn dashboard-active">Month</button>
-                        <button className="dashboard-filter-btn">Year</button>
-                     </div>
-                  </div>
-                  <div className="dashboard-chart-container">
-                     <div className="dashboard-bg-white">
-                        <div className="dashboard-h-64">
-                           <ResponsiveContainer width="100%" height="100%">
-                              <LineChart
-                                 data={data}
-                                 margin={{ top: 5, right: 20, left: 20, bottom: 5 }}
-                              >
-                                 <CartesianGrid
-                                    strokeDasharray="3 3"
-                                    vertical={false}
-                                    stroke="#E0E6ED"
-                                 />
-                                 <XAxis
-                                    dataKey="month"
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#6C757D' }}
-                                 />
-                                 <YAxis
-                                    axisLine={false}
-                                    tickLine={false}
-                                    tick={{ fill: '#6C757D' }}
-                                    tickFormatter={formatYAxis}
-                                 />
-                                 <Tooltip content={<CustomTooltip />} />
-                                 <defs>
-                                    <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                                       <stop offset="5%" stopColor="#FF6B35" stopOpacity={0.1} />
-                                       <stop offset="95%" stopColor="#FF6B35" stopOpacity={0} />
-                                    </linearGradient>
-                                 </defs>
-                                 <Area
-                                    type="monotone"
-                                    dataKey="sales"
-                                    stroke="#FF6B35"
-                                    strokeWidth={2}
-                                    fillOpacity={1}
-                                    fill="url(#colorSales)"
-                                 />
-                                 <Line
-                                    type="monotone"
-                                    dataKey="sales"
-                                    stroke="#FF6B35"
-                                    strokeWidth={2}
-                                    dot={{
-                                       stroke: '#FF6B35',
-                                       strokeWidth: 2,
-                                       r: 4,
-                                       fill: '#FF6B35',
-                                    }}
-                                    activeDot={{
-                                       stroke: '#fff',
-                                       strokeWidth: 2,
-                                       r: 6,
-                                       fill: '#FF6B35',
-                                    }}
-                                 />
-                              </LineChart>
-                           </ResponsiveContainer>
-                        </div>
-                     </div>
-                  </div>
-               </div>
-
-               <div className="dashboard-popular-items">
-                  <div className="dashboard-card-header">
-                     <div className="dashboard-card-title">Popular Items</div>
-                  </div>
-
-                  <div className="dashboard-item-card">
-                     <div className="dashboard-item-image">🍔</div>
-                     <div className="dashboard-item-details">
-                        <div className="dashboard-item-name">Double Cheeseburger</div>
-                        <div className="dashboard-item-category">Burgers</div>
-                        <div className="dashboard-item-price">$8.99</div>
-                     </div>
-                     <div className="dashboard-item-sales">
-                        <div className="dashboard-sales-count">142</div>
-                        <div>Orders</div>
-                     </div>
-                  </div>
-
-                  <div className="dashboard-item-card">
-                     <div className="dashboard-item-image">🍕</div>
-                     <div className="dashboard-item-details">
-                        <div className="dashboard-item-name">Pepperoni Pizza</div>
-                        <div className="dashboard-item-category">Pizza</div>
-                        <div className="dashboard-item-price">$12.99</div>
-                     </div>
-                     <div className="dashboard-item-sales">
-                        <div className="dashboard-sales-count">98</div>
-                        <div>Orders</div>
-                     </div>
-                  </div>
-
-                  <div className="dashboard-item-card">
-                     <div className="dashboard-item-image">🍟</div>
-                     <div className="dashboard-item-details">
-                        <div className="dashboard-item-name">Loaded Fries</div>
-                        <div className="dashboard-item-category">Sides</div>
-                        <div className="dashboard-item-price">$5.49</div>
-                     </div>
-                     <div className="dashboard-item-sales">
-                        <div className="dashboard-sales-count">76</div>
-                        <div>Orders</div>
-                     </div>
-                  </div>
-               </div>
-
-               <div className="dashboard-recent-orders">
-                  <div className="dashboard-card-header">
-                     <div className="dashboard-card-title">Recent Orders</div>
-                  </div>
-
-                  <table className="dashboard-orders-table">
+               <div className="orders-table">
+                  <table>
                      <thead>
                         <tr>
                            <th>Order ID</th>
                            <th>Customer</th>
-                           <th>Items</th>
-                           <th>Date</th>
+                           <th>Products</th>
                            <th>Total</th>
                            <th>Status</th>
                         </tr>
                      </thead>
                      <tbody>
-                        <tr>
-                           <td className="dashboard-order-id">#FB2854</td>
-                           <td>Emily Johnson</td>
-                           <td>Double Cheeseburger, Fries (L), Soda</td>
-                           <td>Mar 8, 2025 - 12:42 PM</td>
-                           <td>$15.97</td>
-                           <td>
-                              <span className="dashboard-order-status dashboard-status-completed">
-                                 Completed
-                              </span>
-                           </td>
-                        </tr>
-                        <tr>
-                           <td className="dashboard-order-id">#FB2853</td>
-                           <td>Michael Smith</td>
-                           <td>Pepperoni Pizza, Buffalo Wings, Garlic Bread</td>
-                           <td>Mar 8, 2025 - 12:35 PM</td>
-                           <td>$24.98</td>
-                           <td>
-                              <span className="dashboard-order-status dashboard-status-preparing">
-                                 Preparing
-                              </span>
-                           </td>
-                        </tr>
-                        <tr>
-                           <td className="dashboard-order-id">#FB2852</td>
-                           <td>Sarah Williams</td>
-                           <td>Caesar Salad, Grilled Chicken Wrap</td>
-                           <td>Mar 8, 2025 - 12:28 PM</td>
-                           <td>$16.48</td>
-                           <td>
-                              <span className="dashboard-order-status dashboard-status-completed">
-                                 Completed
-                              </span>
-                           </td>
-                        </tr>
-                        <tr>
-                           <td className="dashboard-order-id">#FB2851</td>
-                           <td>David Brown</td>
-                           <td>Fish & Chips, Lemonade</td>
-                           <td>Mar 8, 2025 - 12:15 PM</td>
-                           <td>$14.49</td>
-                           <td>
-                              <span className="dashboard-order-status dashboard-status-cancelled">
-                                 Cancelled
-                              </span>
-                           </td>
-                        </tr>
-                        <tr>
-                           <td className="dashboard-order-id">#FB2850</td>
-                           <td>Jessica Davis</td>
-                           <td>Veggie Burger, Sweet Potato Fries, Milkshake</td>
-                           <td>Mar 8, 2025 - 12:03 PM</td>
-                           <td>$18.47</td>
-                           <td>
-                              <span className="dashboard-order-status dashboard-status-completed">
-                                 Completed
-                              </span>
-                           </td>
-                        </tr>
+                        {stats.recentOrders.map((order) => (
+                           <tr key={order.order_id}>
+                              <td>#{order.order_number}</td>
+                              <td>
+                                 {order.first_name} {order.last_name}
+                              </td>
+                              <td>{order.items_count} items</td>
+                              <td>₱{order.total_amount}</td>
+                              <td>
+                                 <span className={`status-badge ${order.status.toLowerCase()}`}>
+                                    {order.status}
+                                 </span>
+                              </td>
+                           </tr>
+                        ))}
                      </tbody>
                   </table>
-
-                  <div className="dashboard-view-more">
-                     <button onClick={handleClick} className="dashboard-flex">
-                        <ShoppingBag size={18} />
-                        <span>View All Orders</span>
-                     </button>
-                  </div>
                </div>
+            </div>
+
+            {/* Top Products */}
+            <div className="dashboard-section">
+               <div className="section-header">
+                  <h2>Top Products</h2>
+                  <Link to="/products" className="view-all">
+                     View All
+                  </Link>
+               </div>
+               <div className="products-grid">
+                  {stats.topProducts.map((product) => (
+                     <div key={product.id} className="product-card">
+                        <img src={product.image} alt={product.name} />
+                        <div className="product-info">
+                           <h3>{product.name}</h3>
+                           <p>₱{product.price}</p>
+                           <span className="sales-count">{product.sales_count} sales</span>
+                        </div>
+                     </div>
+                  ))}
+               </div>
+            </div>
+
+            {/* Sales Chart */}
+            <div className="dashboard-section">
+               <div className="section-header">
+                  <h2>Sales Overview</h2>
+                  <select onChange={(e) => setChartPeriod(e.target.value)} value={chartPeriod}>
+                     <option value="week">This Week</option>
+                     <option value="month">This Month</option>
+                     <option value="year">This Year</option>
+                  </select>
+               </div>
+               <SalesChart period={chartPeriod} />
             </div>
          </div>
       </div>

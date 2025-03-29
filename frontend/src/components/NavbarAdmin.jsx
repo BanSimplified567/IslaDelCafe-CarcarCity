@@ -1,85 +1,126 @@
-import IslaDelCafe from '@public/IslaDelCafeLogoText.png'; // Adjust the path as needed
+import { useAuth } from '@context/AuthContext';
 import '@style/NavbarAdmin.css';
 import {
-   Activity,
+   BarChart3,
+   ChevronLeft,
+   Coffee,
+   Home,
    LogOut,
-   MessageSquare,
    Package,
    Settings,
-   ShoppingCart,
+   ShoppingBag,
    Users,
 } from 'lucide-react';
-import { useState } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
-const NavItem = ({ icon, label, to, isActive, collapsed }) => {
-   return (
-      <li data-tooltip={collapsed ? label : ''}>
-         <NavLink to={to} className={`navbaradmin-item ${isActive ? 'active' : ''}`}>
-            <div className="navbaradmin-icon-wrapper">{icon}</div>
-            <span className={`nav-label ${collapsed ? 'hidden' : ''}`}>{label}</span>
-         </NavLink>
-      </li>
-   );
-};
+function NavbarAdmin({ isCollapsed, setIsCollapsed }) {
+   const { admin, logoutAdmin } = useAuth();
+   const navigate = useNavigate();
 
-const NavbarAdmins = () => {
-   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-   const location = useLocation();
-   const [collapsed, setCollapsed] = useState(false);
+   // // Protect admin routes
+   // if (!admin) {
+   //    navigate('/');
+   //    return null;
+   // }
 
-   const toggleSidebar = () => {
-      setCollapsed(!collapsed);
-      setIsSidebarOpen(!isSidebarOpen);
+   const handleLogout = () => {
+      Swal.fire({
+         title: 'Logout Confirmation',
+         text: 'Are you sure you want to logout?',
+         icon: 'question',
+         showCancelButton: true,
+         confirmButtonColor: '#d33',
+         cancelButtonColor: '#3085d6',
+         confirmButtonText: 'Yes, logout',
+      }).then((result) => {
+         if (result.isConfirmed) {
+            logoutAdmin();
+            navigate('/loginadmin');
+         }
+      });
    };
 
-   const navItems = [
-      { icon: <Activity size={20} />, label: 'Dashboard', to: '/dashboard' },
-      { icon: <Package size={20} />, label: 'Products', to: '/products' },
-      { icon: <ShoppingCart size={20} />, label: 'Orders', to: '/orders' },
-      { icon: <Package size={20} />, label: 'Inventory', to: '/inventory' },
-      { icon: <Users size={20} />, label: 'Employees', to: '/employees' },
-      { icon: <MessageSquare size={20} />, label: 'Messages', to: '/messages' },
-      { icon: <Settings size={20} />, label: 'Admin', to: '/admin' },
-      { icon: <Users size={20} />, label: 'Users', to: '/users' },
-      { icon: <LogOut size={20} />, label: 'Logout', to: '/loginadmin' },
-   ];
-
    return (
-      <div className="admin-layout">
-         <aside className={`navbaradmin ${!isSidebarOpen ? 'navbaradmin-collapsed' : ''}`}>
-            <div className="navbaradmin-brand">
-               <div className="icon">
-                  <img src={IslaDelCafe} alt="IslaDelCafe" />
-               </div>
-               <h2>
-                  <span>IslaDelCafe</span>
-               </h2>
+      <nav className={`navbaradmin ${isCollapsed ? 'navbaradmin-collapsed' : ''}`}>
+         <div className="navbaradmin-brand">
+            <div className="icon">
+               <Coffee size={24} />
             </div>
-            <button className="navbaradmin-toggle" onClick={toggleSidebar}>
-               {isSidebarOpen ? '←' : '→'}
+            <h2>Isla Del Cafe</h2>
+            <button className="navbaradmin-toggle" onClick={() => setIsCollapsed(!isCollapsed)}>
+               <ChevronLeft size={16} />
             </button>
-            <nav className="navbaradmin-menu">
-               <ul>
-                  {navItems.map((item) => (
-                     <NavItem
-                        key={item.to}
-                        icon={item.icon}
-                        label={item.label}
-                        to={item.to}
-                        isActive={location.pathname === item.to}
-                        collapsed={!isSidebarOpen}
-                     />
-                  ))}
-               </ul>
-            </nav>
-         </aside>
-         {/* Main Content Area */}
-         <div className={`content ${collapsed ? 'content-expanded' : ''}`}>
-            <Outlet />
          </div>
-      </div>
-   );
-};
 
-export default NavbarAdmins;
+         <div className="navbaradmin-menu">
+            <ul>
+               <li data-tooltip="Dashboard">
+                  <NavLink to="/dashboard" className="navbaradmin-item">
+                     <span className="navbaradmin-icon-wrapper">
+                        <Home size={20} />
+                     </span>
+                     <span className={`nav-label ${isCollapsed ? 'hidden' : ''}`}>Dashboard</span>
+                  </NavLink>
+               </li>
+
+               <li data-tooltip="Orders">
+                  <NavLink to="/orders" className="navbaradmin-item">
+                     <span className="navbaradmin-icon-wrapper">
+                        <ShoppingBag size={20} />
+                     </span>
+                     <span className={`nav-label ${isCollapsed ? 'hidden' : ''}`}>Orders</span>
+                  </NavLink>
+               </li>
+
+               <li data-tooltip="Products">
+                  <NavLink to="/products" className="navbaradmin-item">
+                     <span className="navbaradmin-icon-wrapper">
+                        <Package size={20} />
+                     </span>
+                     <span className={`nav-label ${isCollapsed ? 'hidden' : ''}`}>Products</span>
+                  </NavLink>
+               </li>
+
+               <li data-tooltip="Users">
+                  <NavLink to="/users" className="navbaradmin-item">
+                     <span className="navbaradmin-icon-wrapper">
+                        <Users size={20} />
+                     </span>
+                     <span className={`nav-label ${isCollapsed ? 'hidden' : ''}`}>Users</span>
+                  </NavLink>
+               </li>
+
+               <li data-tooltip="Analytics">
+                  <NavLink to="/analytics" className="navbaradmin-item">
+                     <span className="navbaradmin-icon-wrapper">
+                        <BarChart3 size={20} />
+                     </span>
+                     <span className={`nav-label ${isCollapsed ? 'hidden' : ''}`}>Analytics</span>
+                  </NavLink>
+               </li>
+
+               <li data-tooltip="Settings">
+                  <NavLink to="/settings" className="navbaradmin-item">
+                     <span className="navbaradmin-icon-wrapper">
+                        <Settings size={20} />
+                     </span>
+                     <span className={`nav-label ${isCollapsed ? 'hidden' : ''}`}>Settings</span>
+                  </NavLink>
+               </li>
+
+               <li data-tooltip="Logout">
+                  <button onClick={handleLogout} className="navbaradmin-item">
+                     <span className="navbaradmin-icon-wrapper">
+                        <LogOut size={20} />
+                     </span>
+                     <span className={`nav-label ${isCollapsed ? 'hidden' : ''}`}>Logout</span>
+                  </button>
+               </li>
+            </ul>
+         </div>
+      </nav>
+   );
+}
+
+export default NavbarAdmin;

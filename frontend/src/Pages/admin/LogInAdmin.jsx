@@ -1,40 +1,108 @@
-import '@style/Login.css'; // ✅ Adjust according to your actual path or alias setup
+import { useAuth } from '@context/AuthContext';
+import '@style/Login.css';
 import axios from 'axios';
 import { Coffee, Eye, EyeOff } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
 
-function Login() {
+function LoginAdmin() {
    const [email, setEmail] = useState('');
    const [password, setPassword] = useState('');
    const [showPassword, setShowPassword] = useState(false);
+   const [loading, setLoading] = useState(false);
+   const [rememberMe, setRememberMe] = useState(false);
    const navigate = useNavigate();
+   const { loginAdmin } = useAuth();
 
    const handleLogin = async (e) => {
       e.preventDefault();
+      setLoading(true);
 
       try {
-         const response = await axios.post('/api/logInAdmin.php', {
+         // Input validation
+         if (!email || !password) {
+            Swal.fire({
+               icon: 'error',
+               title: 'Missing Information',
+               text: 'Please fill in all fields',
+               confirmButtonColor: '#6f4e37',
+            });
+            setLoading(false);
+            return;
+         }
+
+         const response = await axios.post('/api/admin.php?action=login', {
             email,
-            password,
+            password: password.trim(),
          });
 
          if (response.data.success) {
-            console.log('Login successful:', response.data.admin);
-            // You may store to localStorage/session if needed
-            navigate('/dashboard');
+            // Successful login
+            loginAdmin(response.data.admin);
+
+            // Save to localStorage if remember me is checked
+            if (rememberMe) {
+               localStorage.setItem('adminEmail', email);
+            } else {
+               localStorage.removeItem('adminEmail');
+            }
+
+            Swal.fire({
+               icon: 'success',
+               title: 'Welcome Back!',
+               text: 'Login successful',
+               timer: 1500,
+               showConfirmButton: false,
+            }).then(() => {
+               navigate('/dashboard');
+            });
+         } else if (
+            response.data.accountExists &&
+            response.data.admin &&
+            response.data.admin.status === 'pending'
+         ) {
+            // Account exists but is pending
+            Swal.fire({
+               icon: 'warning',
+               title: 'Account Pending',
+               text: 'Your admin account is pending approval. Please contact the super admin.',
+               confirmButtonColor: '#6f4e37',
+            });
          } else {
-            alert(response.data.message || 'Login failed');
+            Swal.fire({
+               icon: 'error',
+               title: 'Login Failed',
+               text: response.data.message || 'Invalid credentials',
+               confirmButtonColor: '#6f4e37',
+            });
          }
       } catch (error) {
          console.error('Login error:', error);
-         alert('An error occurred. Please try again.');
+
+         Swal.fire({
+            icon: 'error',
+            title: 'Login Error',
+            text: 'An error occurred during login. Please try again.',
+            confirmButtonColor: '#6f4e37',
+         });
+      } finally {
+         setLoading(false);
       }
    };
 
    const togglePasswordVisibility = () => {
       setShowPassword(!showPassword);
    };
+
+   // Check for remembered email on component mount
+   useState(() => {
+      const savedEmail = localStorage.getItem('adminEmail');
+      if (savedEmail) {
+         setEmail(savedEmail);
+         setRememberMe(true);
+      }
+   }, []);
 
    return (
       <div className="loginAdminContainer">
@@ -53,11 +121,12 @@ function Login() {
                   <input
                      id="email"
                      type="email"
-                     placeholder="barista@example.com"
+                     placeholder="admin@isladecafe.com"
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
                      className="loginAdminInput"
                      required
+                     disabled={loading}
                   />
                </div>
 
@@ -74,12 +143,14 @@ function Login() {
                         onChange={(e) => setPassword(e.target.value)}
                         className="loginAdminInput"
                         required
+                        disabled={loading}
                      />
                      <button
                         type="button"
                         onClick={togglePasswordVisibility}
                         className="loginAdminPasswordToggle"
                         aria-label="Toggle password visibility"
+                        disabled={loading}
                      >
                         {showPassword ? (
                            <EyeOff className="loginAdminIcon" />
@@ -92,32 +163,47 @@ function Login() {
 
                <div className="loginAdminOptions">
                   <div className="loginAdminRemember">
-                     <input id="remember-me" type="checkbox" className="loginAdminCheckbox" />
+                     <input
+                        id="remember-me"
+                        type="checkbox"
+                        className="loginAdminCheckbox"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        disabled={loading}
+                     />
                      <label htmlFor="remember-me" className="loginAdminCheckboxLabel">
                         Remember me
                      </label>
                   </div>
                   <div className="loginAdminForgot">
-                     <a href="#" className="loginAdminLink">
+                     <Link to="/forgot-password" className="loginAdminLink">
                         Forgot password?
-                     </a>
+                     </Link>
                   </div>
                </div>
 
-               <button type="submit" className="loginAdminButton">
-                  Sign in
+               <button type="submit" className="loginAdminButton" disabled={loading}>
+                  {loading ? (
+                     <div className="loginAdminButtonLoading">
+                        <span className="loginAdminSpinner"></span>
+                        Signing in...
+                     </div>
+                  ) : (
+                     'Sign in'
+                  )}
                </button>
             </form>
 
             <div className="loginAdminFooter">
-               Need an account?
-               <Link className="loginAdminLink" to="/register">
-                  Register here
-               </Link>
+               <p className="loginAdminFooterText">
+                  New admin registration requires approval from existing admin.
+                  <br />
+                  Please contact the administrator for access.
+               </p>
             </div>
          </div>
       </div>
    );
 }
 
-export default Login;
+export default LoginAdmin;
