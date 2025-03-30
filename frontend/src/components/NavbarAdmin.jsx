@@ -2,6 +2,7 @@ import { useAuth } from '@context/AuthContext';
 import '@style/NavbarAdmin.css';
 import {
    BarChart3,
+   Boxes,
    ChevronLeft,
    Coffee,
    Home,
@@ -17,12 +18,6 @@ import Swal from 'sweetalert2';
 function NavbarAdmin({ isCollapsed, setIsCollapsed }) {
    const { admin, logoutAdmin } = useAuth();
    const navigate = useNavigate();
-
-   // // Protect admin routes
-   // if (!admin) {
-   //    navigate('/');
-   //    return null;
-   // }
 
    const handleLogout = () => {
       Swal.fire({
@@ -82,6 +77,15 @@ function NavbarAdmin({ isCollapsed, setIsCollapsed }) {
                   </NavLink>
                </li>
 
+               <li data-tooltip="Inventory">
+                  <NavLink to="/inventory" className="navbaradmin-item">
+                     <span className="navbaradmin-icon-wrapper">
+                        <Boxes size={20} />
+                     </span>
+                     <span className={`nav-label ${isCollapsed ? 'hidden' : ''}`}>Inventory</span>
+                  </NavLink>
+               </li>
+
                <li data-tooltip="Users">
                   <NavLink to="/users" className="navbaradmin-item">
                      <span className="navbaradmin-icon-wrapper">
@@ -108,6 +112,16 @@ function NavbarAdmin({ isCollapsed, setIsCollapsed }) {
                      <span className={`nav-label ${isCollapsed ? 'hidden' : ''}`}>Settings</span>
                   </NavLink>
                </li>
+
+               {/* Optional: Admin Profile */}
+               {/* <li data-tooltip="My Account">
+                  <NavLink to="/admin-profile" className="navbaradmin-item">
+                     <span className="navbaradmin-icon-wrapper">
+                        <UserCog size={20} />
+                     </span>
+                     <span className={`nav-label ${isCollapsed ? 'hidden' : ''}`}>My Account</span>
+                  </NavLink>
+               </li> */}
 
                <li data-tooltip="Logout">
                   <button onClick={handleLogout} className="navbaradmin-item">

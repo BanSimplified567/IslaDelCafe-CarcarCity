@@ -1,4 +1,4 @@
-import ProductManagement from '@components/admin/ProductManagement';
+import ProductManagement from '@pages/admin/ProductManagement';
 import '@style/Products.css';
 import { useState } from 'react';
 import { Outlet } from 'react-router-dom';

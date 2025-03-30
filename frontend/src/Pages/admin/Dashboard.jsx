@@ -1,7 +1,7 @@
 // Dashboard.jsx
-import DashboardSummary from '@components/admin/DashboardSummary';
-import SalesChart from '@components/admin/SalesChart';
 import { useAuth } from '@context/AuthContext';
+import DashboardSummary from '@pages/admin/DashboardSummary';
+import SalesChart from '@pages/admin/SalesChart';
 import '@style/Dashboard.css';
 import axios from 'axios';
 import { Coffee, Package, ShoppingBag, Users } from 'lucide-react';

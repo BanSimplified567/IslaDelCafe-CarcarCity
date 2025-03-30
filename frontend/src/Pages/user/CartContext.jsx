@@ -1,3 +1,4 @@
+// CartContext.js
 import React, { createContext, useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 

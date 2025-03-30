@@ -54,8 +54,8 @@ function RegisterUser() {
 
       try {
          const response = await axios.post('/api/users.php?action=register', {
-            first_name: formData.first_name,
-            last_name: formData.last_name,
+            firstName: formData.first_name,
+            lastName: formData.last_name,
             email: formData.email,
             password: formData.password,
             phone: formData.phone,
@@ -78,7 +78,7 @@ function RegisterUser() {
          }
       } catch (err) {
          console.error(err);
-         setError('Server error. Please try again.');
+         setError(err.response?.data?.message || 'Server error. Please try again.');
       } finally {
          setLoading(false);
       }

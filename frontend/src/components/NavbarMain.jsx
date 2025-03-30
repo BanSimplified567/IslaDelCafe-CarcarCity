@@ -7,7 +7,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 function NavbarMain() {
    const [menuOpen, setMenuOpen] = useState(false);
    const [isScrolled, setIsScrolled] = useState(false);
-   const { isLoggedIn, logout } = useAuth();
+   const { isAuthenticated, logoutUser } = useAuth();
    const navigate = useNavigate(); // ✅ For programmatic navigation
 
    useEffect(() => {
@@ -24,7 +24,7 @@ function NavbarMain() {
    };
 
    const handleLogout = () => {
-      logout(); // Clear user session
+      logoutUser(); // Update to use logoutUser instead of logout
       navigate('/'); // Redirect to login page
    };
 
@@ -74,20 +74,28 @@ function NavbarMain() {
          </nav>
 
          <div className="index-search-signin">
-            {isLoggedIn ? (
+            {isAuthenticated ? (
                <div className="index-user-actions">
-                  <NavLink to="/cart" className="index-icon-button">
-                     <ShoppingCart />
+                  <NavLink to="/cart" className="index-icon-button" title="Shopping Cart">
+                     <ShoppingCart size={20} />
+                     <span className="sr-only">Cart</span>
                   </NavLink>
-                  <NavLink to="/profile" className="index-icon-button">
-                     <User />
+                  <NavLink to="/profile" className="index-icon-button" title="User Profile">
+                     <User size={20} />
+                     <span className="sr-only">Profile</span>
                   </NavLink>
-                  <button onClick={handleLogout} className="index-icon-button" title="Logout">
-                     <LogOut />
+                  <button
+                     onClick={handleLogout}
+                     className="index-icon-button"
+                     title="Logout"
+                     aria-label="Logout"
+                  >
+                     <LogOut size={20} />
+                     <span className="sr-only">Logout</span>
                   </button>
                </div>
             ) : (
-               <NavLink to="/" className="index-icon-button index-signin-button">
+               <NavLink to="/" className="index-icon-button index-signin-button" title="Sign In">
                   SIGN IN
                </NavLink>
             )}

@@ -27,7 +27,7 @@ const Orders = lazy(() => import('@pages/admin/Orders'));
 const Products = lazy(() => import('@pages/admin/Products'));
 const Users = lazy(() => import('@pages/admin/Users'));
 const OrderConfirmation = lazy(() => import('@pages/user/OrderConfirmation'));
-const ProductManagement = lazy(() => import('@components/admin/ProductManagement'));
+const ProductManagement = lazy(() => import('@pages/admin/ProductManagement'));
 const AdminApprovals = lazy(() => import('@pages/admin/AdminApprovals'));
 
 import { CartProvider } from '@pages/user/CartContext';

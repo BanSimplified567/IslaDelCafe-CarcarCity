@@ -23,7 +23,17 @@ function Menu() {
                throw new Error(`HTTP error! Status: ${response.status}`);
             }
             const data = await response.json();
-            setProducts(data);
+
+            // Check if the response has the expected structure
+            if (data.success && Array.isArray(data.data)) {
+               setProducts(data.data);
+            } else if (Array.isArray(data)) {
+               // If the response is directly an array
+               setProducts(data);
+            } else {
+               throw new Error('Invalid data format received from API');
+            }
+
             setError(null);
          } catch (err) {
             setError('Failed to fetch products: ' + err.message);
@@ -46,7 +56,7 @@ function Menu() {
    const sortedProducts = [...filteredProducts].sort((a, b) => {
       if (sortBy === 'price-low') return a.price - b.price;
       if (sortBy === 'price-high') return b.price - a.price;
-      if (sortBy === 'newest') return b.id - a.id;
+      if (sortBy === 'newest') return new Date(b.created_at) - new Date(a.created_at);
       // Default: popular (by id)
       return a.id - b.id;
    });
@@ -153,9 +163,13 @@ function Menu() {
       );
    }
 
-
    if (error) {
       return <div className="menu-container-error">{error}</div>;
+   }
+
+   // Check if products array is empty
+   if (products.length === 0) {
+      return <div className="menu-container-no-products">No products found. Please check the database connection.</div>;
    }
 
    return (
@@ -266,111 +280,132 @@ function Menu() {
 
                {/* Products grid */}
                <div className="menu-container-products-grid">
-                  {currentProducts.map((product) => {
-                     // Check if the item is at max quantity
-                     const isAtMaxQuantity = !canAddToCart(product.id);
+                  {currentProducts.length > 0 ? (
+                     currentProducts.map((product) => {
+                        // Check if the item is at max quantity
+                        const isAtMaxQuantity = !canAddToCart(product.id);
+                        // Handle potential image path issues
+                        const imagePath = product.image && product.image.startsWith('/')
+                           ? `/assets/img${product.image}`
+                           : `/assets/img/${product.image}`;
 
-
-                     return (
-                        <div key={product.id} className="menu-container-product-card">
-                           <div className="menu-container-product-image">
-                              <img
-                                 src={`/assets/img/${product.image}`}
-                                 alt={product.name}
-                                 className="menu-container-product-img"
-                              />
-                           </div>
-                           <div className="menu-container-product-details">
-                              <h3 className="menu-container-product-name">{product.name}</h3>
-
-                              {/* Rating display */}
-                              <div className="menu-container-product-rating">
-                                 {renderStarRating(parseFloat(product.rating))}
-                                 <span className="menu-container-rating-text">
-                                    {parseFloat(product.rating).toFixed(1)} ({product.review_count}{' '}
-                                    reviews)
-                                 </span>
-                              </div>
-
-                              <div className="menu-container-product-pricing">
-                                 <p className="menu-container-product-price">
-                                    ₱{parseFloat(product.price).toFixed(2)}
-                                 </p>
-                                 <p className="menu-container-product-original-price">
-                                    ₱{parseFloat(product.original_price).toFixed(2)}
-                                 </p>
-                              </div>
-                              <p className="menu-container-product-description">
-                                 {product.description}
-                              </p>
-                              <div className="menu-container-product-actions">
-                                 <Link
-                                    to={`/product/${product.id}`}
-                                    className="menu-container-view-button"
-                                 >
-                                    View Details
-                                 </Link>
-
-                                 <button
-                                    className={`menu-container-add-button ${
-                                       isAtMaxQuantity ? 'menu-container-add-button-disabled' : ''
-                                    }`}
-                                    onClick={() => {
-                                       if (isAtMaxQuantity) {
-                                          Swal.fire({
-                                             icon: 'warning',
-                                             title: 'Maximum Limit Reached',
-                                             text: `You have already added ${maxQuantityPerItem} of this item.`,
-                                             confirmButtonColor: '#6b705c',
-                                          });
-                                       } else {
-                                          handleAddToCart(product);
-                                       }
+                        return (
+                           <div key={product.id} className="menu-container-product-card">
+                              <div className="menu-container-product-image">
+                                 <img
+                                    src={imagePath}
+                                    alt={product.name}
+                                    className="menu-container-product-img"
+                                    onError={(e) => {
+                                       // Fallback image if the path fails
+                                       e.target.src = '/assets/img/default-product.jpg';
                                     }}
-                                 >
-                                    {isAtMaxQuantity ? 'Max Limit' : 'Add to Cart'}
-                                 </button>
+                                 />
+                              </div>
+                              <div className="menu-container-product-details">
+                                 <h3 className="menu-container-product-name">{product.name}</h3>
+
+                                 {/* Rating display */}
+                                 <div className="menu-container-product-rating">
+                                    {product.rating ? (
+                                       <>
+                                          {renderStarRating(parseFloat(product.rating))}
+                                          <span className="menu-container-rating-text">
+                                             {parseFloat(product.rating).toFixed(1)} ({product.review_count || 0}{' '}
+                                             reviews)
+                                          </span>
+                                       </>
+                                    ) : (
+                                       <span className="menu-container-rating-text">No ratings yet</span>
+                                    )}
+                                 </div>
+
+                                 <div className="menu-container-product-pricing">
+                                    <p className="menu-container-product-price">
+                                       ₱{parseFloat(product.price).toFixed(2)}
+                                    </p>
+                                    {product.original_price && (
+                                       <p className="menu-container-product-original-price">
+                                          ₱{parseFloat(product.original_price).toFixed(2)}
+                                       </p>
+                                    )}
+                                 </div>
+                                 <p className="menu-container-product-description">
+                                    {product.description || 'No description available'}
+                                 </p>
+                                 <div className="menu-container-product-actions">
+                                    <Link
+                                       to={`/product/${product.id}`}
+                                       className="menu-container-view-button"
+                                    >
+                                       View Details
+                                    </Link>
+
+                                    <button
+                                       className={`menu-container-add-button ${
+                                          isAtMaxQuantity ? 'menu-container-add-button-disabled' : ''
+                                       }`}
+                                       onClick={() => {
+                                          if (isAtMaxQuantity) {
+                                             Swal.fire({
+                                                icon: 'warning',
+                                                title: 'Maximum Limit Reached',
+                                                text: `You have already added ${maxQuantityPerItem} of this item.`,
+                                                confirmButtonColor: '#6b705c',
+                                             });
+                                          } else {
+                                             handleAddToCart(product);
+                                          }
+                                       }}
+                                    >
+                                       {isAtMaxQuantity ? 'Max Limit' : 'Add to Cart'}
+                                    </button>
+                                 </div>
                               </div>
                            </div>
-                        </div>
-                     );
-                  })}
+                        );
+                     })
+                  ) : (
+                     <div className="menu-container-no-products">No products found for the selected category.</div>
+                  )}
                </div>
 
                {/* Pagination */}
-               <div className="menu-container-pagination">
-                  <nav className="menu-container-pagination-nav">
-                     <button
-                        className={`menu-container-pagination-prev ${
-                           currentPage === 1 ? 'menu-container-pagination-disabled' : ''
-                        }`}
-                        onClick={handlePrevPage}
-                        disabled={currentPage === 1}
-                     >
-                        Previous
-                     </button>
-                     {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+               {totalPages > 0 && (
+                  <div className="menu-container-pagination">
+                     <nav className="menu-container-pagination-nav">
                         <button
-                           key={page}
-                           onClick={() => setCurrentPage(page)}
-                           className={`menu-container-pagination-page ${
-                              page === currentPage ? 'menu-container-pagination-active' : ''
+                           className={`menu-container-pagination-prev ${
+                              currentPage === 1 ? 'menu-container-pagination-disabled' : ''
                            }`}
+                           onClick={handlePrevPage}
+                           disabled={currentPage === 1}
                         >
-                           {page}
+                           Previous
                         </button>
-                     ))}
-                     <button
-                        className={`menu-container-pagination-next ${
-                           currentPage === totalPages ? 'menu-container-pagination-disabled' : ''
-                        }`}
-                        onClick={handleNextPage}
-                        disabled={currentPage === totalPages}
-                     >
-                        Next
-                     </button>
-                  </nav>
-               </div>
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                           <button
+                              key={page}
+                              onClick={() => setCurrentPage(page)}
+                              className={`menu-container-pagination-page ${
+                                 page === currentPage ? 'menu-container-pagination-active' : ''
+                              }`}
+                           >
+                              {page}
+                           </button>
+                        ))}
+                        <button
+                           className={`menu-container-pagination-next ${
+                              currentPage === totalPages ? 'menu-container-pagination-disabled' : ''
+                           }`}
+                           onClick={handleNextPage}
+                           disabled={currentPage === totalPages}
+                        >
+                           Next
+                        </button>
+                     </nav>
+                  </div>
+               )}
             </div>
          </div>
       </div>
