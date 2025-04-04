@@ -10,7 +10,7 @@ header("Access-Control-Allow-Methods: GET, POST, OPTIONS");
 
 // Database connection parameters
 $host = 'localhost'; // Your database host (usually localhost)
-$dbname = 'isladelcafe'; // The name of your database
+$dbname = 'isladelcafecarcar'; // The name of your database
 $user = 'root'; // Database username
 $password = ''; // Database password
 
