@@ -1,5 +1,5 @@
-import { useAuth } from '@context/AuthContext'; // Adjust the import path
 import '@style/NavbarMain.css';
+import axios from 'axios';
 import { LogOut, Menu, ShoppingCart, User, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
@@ -7,25 +7,58 @@ import { NavLink, useNavigate } from 'react-router-dom';
 function NavbarMain() {
    const [menuOpen, setMenuOpen] = useState(false);
    const [isScrolled, setIsScrolled] = useState(false);
-   const { isAuthenticated, logoutUser } = useAuth();
-   const navigate = useNavigate(); // ✅ For programmatic navigation
+   const [isAuthenticated, setIsAuthenticated] = useState(false);
+   const navigate = useNavigate();
 
    useEffect(() => {
       const handleScroll = () => {
          setIsScrolled(window.scrollY > 50);
       };
-
       window.addEventListener('scroll', handleScroll);
       return () => window.removeEventListener('scroll', handleScroll);
+   }, []);
+
+   useEffect(() => {
+      const checkAuth = async () => {
+         // Fix: Safely get and parse session storage item
+         const storedUserData = sessionStorage.getItem('user');
+         const storedUser = storedUserData ? JSON.parse(storedUserData) : null;
+
+         if (storedUser?.email) {
+            try {
+               const response = await axios.get('/api/account.php?action=check-auth');
+
+               if (response.data.success && response.data.user.email === storedUser.email) {
+                  setIsAuthenticated(true);
+               } else {
+                  setIsAuthenticated(false);
+                  sessionStorage.removeItem('user');
+               }
+            } catch (error) {
+               console.error('Auth check failed:', error);
+               setIsAuthenticated(false);
+            }
+         } else {
+            setIsAuthenticated(false);
+         }
+      };
+
+      checkAuth();
    }, []);
 
    const handleNavLinkClick = () => {
       if (menuOpen) setMenuOpen(false);
    };
 
-   const handleLogout = () => {
-      logoutUser(); // Update to use logoutUser instead of logout
-      navigate('/'); // Redirect to login page
+   const handleLogout = async () => {
+      try {
+         await axios.post('/api/account.php?action=logout', {}, { withCredentials: true });
+         sessionStorage.removeItem('user');
+         setIsAuthenticated(false);
+         navigate('/');
+      } catch (error) {
+         console.error('Logout failed:', error);
+      }
    };
 
    return (
@@ -34,42 +67,23 @@ function NavbarMain() {
 
          <nav className={`index-nav ${menuOpen ? 'index-nav-open' : 'index-nav-closed'}`}>
             <ul className="index-nav-list">
-               <li className="index-nav-list-item">
-                  <NavLink
-                     to="/index"
-                     onClick={handleNavLinkClick}
-                     className={({ isActive }) => (isActive ? 'active' : '')}
-                  >
-                     Home
-                  </NavLink>
-               </li>
-               <li className="index-nav-list-item">
-                  <NavLink
-                     to="/menu"
-                     onClick={handleNavLinkClick}
-                     className={({ isActive }) => (isActive ? 'active' : '')}
-                  >
-                     Menu
-                  </NavLink>
-               </li>
-               <li className="index-nav-list-item">
-                  <NavLink
-                     to="/about"
-                     onClick={handleNavLinkClick}
-                     className={({ isActive }) => (isActive ? 'active' : '')}
-                  >
-                     About Us
-                  </NavLink>
-               </li>
-               <li className="index-nav-list-item">
-                  <NavLink
-                     to="/contact"
-                     onClick={handleNavLinkClick}
-                     className={({ isActive }) => (isActive ? 'active' : '')}
-                  >
-                     Contact Us
-                  </NavLink>
-               </li>
+               {['/index', '/menu', '/about', '/contact'].map((path, i) => (
+                  <li key={i} className="index-nav-list-item">
+                     <NavLink
+                        to={path}
+                        onClick={handleNavLinkClick}
+                        className={({ isActive }) => (isActive ? 'active' : '')}
+                     >
+                        {path === '/index'
+                           ? 'Home'
+                           : path === '/menu'
+                           ? 'Menu'
+                           : path === '/about'
+                           ? 'About Us'
+                           : 'Contact Us'}
+                     </NavLink>
+                  </li>
+               ))}
             </ul>
          </nav>
 

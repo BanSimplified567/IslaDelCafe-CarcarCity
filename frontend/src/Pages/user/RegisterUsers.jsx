@@ -53,9 +53,9 @@ function RegisterUser() {
       }
 
       try {
-         const response = await axios.post('/api/users.php?action=register', {
-            firstName: formData.first_name,
-            lastName: formData.last_name,
+         const response = await axios.post('/api/account.php?action=register', {
+            first_name: formData.first_name,
+            last_name: formData.last_name,
             email: formData.email,
             password: formData.password,
             phone: formData.phone,

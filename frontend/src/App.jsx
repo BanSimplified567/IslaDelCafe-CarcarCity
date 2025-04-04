@@ -1,5 +1,3 @@
-import { ProtectedRoute } from '@components/ProtectedRoute';
-import { AuthProvider } from '@context/AuthContext';
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider, useLocation } from 'react-router-dom';
 
@@ -27,11 +25,7 @@ const Orders = lazy(() => import('@pages/admin/Orders'));
 const Products = lazy(() => import('@pages/admin/Products'));
 const Users = lazy(() => import('@pages/admin/Users'));
 const OrderConfirmation = lazy(() => import('@pages/user/OrderConfirmation'));
-const ProductManagement = lazy(() => import('@pages/admin/ProductManagement'));
-const AdminApprovals = lazy(() => import('@pages/admin/AdminApprovals'));
 
-import { CartProvider } from '@pages/user/CartContext';
-const RegisterAdmin = lazy(() => import('@pages/admin/RegisterAdmin'));
 const RegisterUsers = lazy(() => import('@pages/user/RegisterUsers'));
 
 // Lazy load navbar components
@@ -162,7 +156,6 @@ export const router = createBrowserRouter([
          // Auth routes
          { path: '/', element: <Login /> },
          { path: '/loginadmin', element: <LoginAdmin /> },
-         { path: '/registeradmin', element: <RegisterAdmin /> },
          { path: '/registerusers', element: <RegisterUsers /> },
 
          // Regular user pages
@@ -182,11 +175,7 @@ export const router = createBrowserRouter([
             children: [
                {
                   path: '/dashboard',
-                  element: (
-                     <ProtectedRoute requireAdmin>
-                        <Dashboard />
-                     </ProtectedRoute>
-                  ),
+                  element: <Dashboard />,
                },
                { path: '/admin', element: <Admin /> },
                { path: '/employees', element: <Employees /> },
@@ -196,13 +185,8 @@ export const router = createBrowserRouter([
                {
                   path: '/products',
                   element: <Products />,
-                  children: [{ path: 'manage', element: <ProductManagement /> }],
                },
                { path: '/users', element: <Users /> },
-               {
-                  path: '/admin-approvals',
-                  element: <AdminApprovals />,
-               },
             ],
          },
 
@@ -216,11 +200,7 @@ export const router = createBrowserRouter([
 function App() {
    return (
       <Suspense fallback={<PageLoader />}>
-         <AuthProvider>
-            <CartProvider>
-               <RouterProvider router={router}></RouterProvider>
-            </CartProvider>
-         </AuthProvider>
+         <RouterProvider router={router}></RouterProvider>
       </Suspense>
    );
 }

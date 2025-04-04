@@ -1,8 +1,7 @@
-import { useAuth } from '@context/AuthContext';
 import '@style/Login.css';
 import axios from 'axios';
 import { Coffee, Eye, EyeOff } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Swal from 'sweetalert2';
 
@@ -13,7 +12,6 @@ function LoginAdmin() {
    const [loading, setLoading] = useState(false);
    const [rememberMe, setRememberMe] = useState(false);
    const navigate = useNavigate();
-   const { loginAdmin } = useAuth();
 
    const handleLogin = async (e) => {
       e.preventDefault();
@@ -95,8 +93,8 @@ function LoginAdmin() {
       setShowPassword(!showPassword);
    };
 
-   // Check for remembered email on component mount
-   useState(() => {
+   // Check for remembered email on component mount - Fixed to use useEffect instead of useState
+   useEffect(() => {
       const savedEmail = localStorage.getItem('adminEmail');
       if (savedEmail) {
          setEmail(savedEmail);
@@ -120,7 +118,7 @@ function LoginAdmin() {
                   </label>
                   <input
                      id="email"
-                     type="email"
+                     type="text"
                      placeholder="admin@isladecafe.com"
                      value={email}
                      onChange={(e) => setEmail(e.target.value)}
