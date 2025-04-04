@@ -1,5 +1,5 @@
 <?php
-require_once "./dbconn.php";
+require_once "dbconn.php";
 // SQL query to select the desired columns - updated to use tblproducts and include review_count
 $sql = "SELECT id, name, price, original_price, category, category_quality, image, description, default_size, default_temperature, rating, review_count, caffeine
 FROM tblproducts";
