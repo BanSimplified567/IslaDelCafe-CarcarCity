@@ -22,7 +22,7 @@ import cappuccinoImg from '/assets/img/61790296.jpg';
 // Coffee product data
 export const products = [
    {
-      id: 1,
+      product_id: 1,
       name: 'Americano',
       price: 49,
       originalPrice: 99,
@@ -46,7 +46,7 @@ export const products = [
       },
    },
    {
-      id: 2,
+      product_id: 2,
       name: 'Cafe Latte',
       price: 49,
       originalPrice: 99,
@@ -70,7 +70,7 @@ export const products = [
       },
    },
    {
-      id: 3,
+      product_id: 3,
       name: 'Spanish Latte',
       price: 49,
       originalPrice: 99,
@@ -94,7 +94,7 @@ export const products = [
       },
    },
    {
-      id: 4,
+      product_id: 4,
       name: 'Vanilla Latte',
       price: 49,
       originalPrice: 99,
@@ -118,7 +118,7 @@ export const products = [
       },
    },
    {
-      id: 5,
+      product_id: 5,
       name: 'Caramel Latte',
       price: 49,
       originalPrice: 99,
@@ -142,7 +142,7 @@ export const products = [
       },
    },
    {
-      id: 6,
+      product_id: 6,
       name: 'White Mocha',
       price: 49,
       originalPrice: 99,
@@ -166,7 +166,7 @@ export const products = [
       },
    },
    {
-      id: 7,
+      product_id: 7,
       name: 'Java Chips',
       price: 49,
       originalPrice: 99,
@@ -191,7 +191,7 @@ export const products = [
       },
    },
    {
-      id: 8,
+      product_id: 8,
       name: 'Einspanner Latte',
       price: 49,
       originalPrice: 99,
@@ -215,7 +215,7 @@ export const products = [
       },
    },
    {
-      id: 9,
+      product_id: 9,
       name: 'Matcha Latte',
       price: 49,
       originalPrice: 99,
@@ -239,7 +239,7 @@ export const products = [
       },
    },
    {
-      id: 10,
+      product_id: 10,
       name: 'Merry Matcha',
       price: 49,
       originalPrice: 99,
@@ -263,7 +263,7 @@ export const products = [
       },
    },
    {
-      id: 11,
+      product_id: 11,
       name: 'Strawberry Matcha',
       price: 49,
       originalPrice: 99,
@@ -287,7 +287,7 @@ export const products = [
       },
    },
    {
-      id: 12,
+      product_id: 12,
       name: 'Matcha Espresso',
       price: 49,
       originalPrice: 99,
@@ -311,7 +311,7 @@ export const products = [
       },
    },
    {
-      id: 13,
+      product_id: 13,
       name: 'Ube Taro',
       price: 49,
       originalPrice: 99,
@@ -335,7 +335,7 @@ export const products = [
       },
    },
    {
-      id: 14,
+      product_id: 14,
       name: 'Strawberry',
       price: 49,
       originalPrice: 99,
@@ -359,7 +359,7 @@ export const products = [
       },
    },
    {
-      id: 15,
+      product_id: 15,
       name: 'Dark Cocoa',
       price: 49,
       originalPrice: 99,
@@ -383,7 +383,7 @@ export const products = [
       },
    },
    {
-      id: 17,
+      product_id: 17,
       name: 'Pink Lychee',
       price: 39,
       originalPrice: 79,
@@ -407,7 +407,7 @@ export const products = [
       },
    },
    {
-      id: 18,
+      product_id: 18,
       name: 'Purple Lemonade',
       price: 39,
       originalPrice: 79,
@@ -431,7 +431,7 @@ export const products = [
       },
    },
    {
-      id: 19,
+      product_id: 19,
       name: 'Creamy Cocoa',
       price: 39,
       originalPrice: 79,
@@ -455,7 +455,7 @@ export const products = [
       },
    },
    {
-      id: 20,
+      product_id: 20,
       name: 'Cappuccino',
       price: 39,
       originalPrice: 79,

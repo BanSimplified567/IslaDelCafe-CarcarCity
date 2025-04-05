@@ -1,5 +1,5 @@
 import '@style/Menu.css';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
 import { CartContext } from './CartContext';
@@ -8,8 +8,11 @@ function Menu() {
    const [selectedCategory, setSelectedCategory] = useState('all');
    const [sortBy, setSortBy] = useState('popular');
    const [currentPage, setCurrentPage] = useState(1);
-   const itemsPerPage = 9; // Number of items to show per page
-   const { addToCart, cartItems, maxQuantityPerItem = 5 } = useContext(CartContext);
+   const [minPrice, setMinPrice] = useState('');
+   const [maxPrice, setMaxPrice] = useState('');
+   const itemsPerPage = 9;
+
+   const { addToCart, cartItems, maxQuantityPerItem } = useContext(CartContext);
    const [products, setProducts] = useState([]);
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
@@ -19,16 +22,12 @@ function Menu() {
          try {
             setLoading(true);
             const response = await fetch('/api/products.php');
-            if (!response.ok) {
-               throw new Error(`HTTP error! Status: ${response.status}`);
-            }
+            if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
             const data = await response.json();
 
-            // Check if the response has the expected structure
             if (data.success && Array.isArray(data.data)) {
                setProducts(data.data);
             } else if (Array.isArray(data)) {
-               // If the response is directly an array
                setProducts(data);
             } else {
                throw new Error('Invalid data format received from API');
@@ -37,7 +36,6 @@ function Menu() {
             setError(null);
          } catch (err) {
             setError('Failed to fetch products: ' + err.message);
-            console.error('Error fetching products:', err);
          } finally {
             setLoading(false);
          }
@@ -46,80 +44,110 @@ function Menu() {
       fetchProducts();
    }, []);
 
-   // Filter products by category
-   const filteredProducts =
-      selectedCategory === 'all'
-         ? products
-         : products.filter((product) => product.category === selectedCategory);
+   const filteredProducts = useMemo(() => {
+      return products.filter((product) => {
+         // Use type instead of category to match database structure
+         const matchesCategory = selectedCategory === 'all' || product.type === selectedCategory;
+         const price = parseFloat(product.price) || 0;
+         const meetsMin = minPrice === '' || price >= parseFloat(minPrice);
+         const meetsMax = maxPrice === '' || price <= parseFloat(maxPrice);
+         return matchesCategory && meetsMin && meetsMax;
+      });
+   }, [products, selectedCategory, minPrice, maxPrice]);
 
-   // Sort products based on selection
-   const sortedProducts = [...filteredProducts].sort((a, b) => {
-      if (sortBy === 'price-low') return a.price - b.price;
-      if (sortBy === 'price-high') return b.price - a.price;
-      if (sortBy === 'newest') return new Date(b.created_at) - new Date(a.created_at);
-      // Default: popular (by id)
-      return a.id - b.id;
-   });
+   const sortedProducts = useMemo(() => {
+      return [...filteredProducts].sort((a, b) => {
+         if (sortBy === 'price-low') return (a.price ?? 0) - (b.price ?? 0);
+         if (sortBy === 'price-high') return (b.price ?? 0) - (a.price ?? 0);
+         if (sortBy === 'newest') return new Date(b.created_at) - new Date(a.created_at);
+         if (sortBy === 'category') return (a.type || '').localeCompare(b.type || '');
+         return a.product_id - b.product_id; // Use product_id instead of id
+      });
+   }, [filteredProducts, sortBy]);
 
-   // Calculate pagination
    const totalPages = Math.ceil(sortedProducts.length / itemsPerPage);
    const startIndex = (currentPage - 1) * itemsPerPage;
    const endIndex = startIndex + itemsPerPage;
    const currentProducts = sortedProducts.slice(startIndex, endIndex);
 
-   // Handle page navigation
    const handlePrevPage = () => {
       if (currentPage > 1) {
          setCurrentPage(currentPage - 1);
+         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
    };
 
    const handleNextPage = () => {
       if (currentPage < totalPages) {
          setCurrentPage(currentPage + 1);
+         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
    };
 
-   // Check if item can be added to cart (not exceeding max quantity)
-   const canAddToCart = (productId) => {
-      const existingItem = cartItems.find((item) => item.id === productId);
-      return !existingItem || existingItem.quantity < maxQuantityPerItem;
+   const handlePageClick = (page) => {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
    };
 
-   // Handle add to cart with quantity check
-   const handleAddToCart = (product) => {
-      const existingItem = cartItems.find((item) => item.id === product.id);
-      const currentQuantity = existingItem ? existingItem.quantity : 0;
+   const canAddToCart = useCallback(
+      (productId) => {
+         const existingItem = cartItems.find((item) => item.id === productId);
+         return !existingItem || existingItem.quantity < maxQuantityPerItem;
+      },
+      [cartItems, maxQuantityPerItem]
+   );
 
-      if (currentQuantity >= maxQuantityPerItem) {
-         Swal.fire({
-            icon: 'warning',
-            title: 'Limit Reached',
-            text: `You can only order up to ${maxQuantityPerItem} of this item.`,
-            confirmButtonColor: '#6b705c',
+   const handleAddToCart = useCallback(
+      (product) => {
+         const stock = parseInt(product.stock) || 0;
+
+         if (stock <= 0) {
+            Swal.fire({
+               icon: 'warning',
+               title: 'Out of Stock',
+               text: 'This item is currently out of stock.',
+               confirmButtonColor: '#6b705c',
+            });
+            return;
+         }
+
+         const existingItem = cartItems.find((item) => item.id === product.product_id);
+         const currentQuantity = existingItem ? existingItem.quantity : 0;
+
+         if (currentQuantity >= stock) {
+            Swal.fire({
+               icon: 'warning',
+               title: 'Stock Limit Reached',
+               text: `Only ${stock} items available in stock.`,
+               confirmButtonColor: '#6b705c',
+            });
+            return;
+         }
+
+         addToCart({
+            id: product.product_id,
+            name: product.name,
+            price: product.price,
+            quantity: 1,
+            image: product.image,
+            size: 'Small',
+            stock: stock,
+            type: product.type,
          });
-         return;
-      }
 
-      addToCart({
-         id: product.id,
-         name: product.name,
-         price: product.price,
-         quantity: 1,
-         image: product.image,
-      });
+         Swal.fire({
+            icon: 'success',
+            title: 'Added to Cart',
+            text: `${product.name} has been added to your cart.`,
+            timer: 1500,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end',
+         });
+      },
+      [addToCart, cartItems]
+   );
 
-      Swal.fire({
-         icon: 'success',
-         title: 'Added to Cart',
-         text: `${product.name} has been added to your cart.`,
-         timer: 1500,
-         showConfirmButton: false,
-         toast: true,
-         position: 'top-end',
-      });
-   };
-   // Function to render star ratings
    const renderStarRating = (rating) => {
       const fullStars = Math.floor(rating);
       const hasHalfStar = rating % 1 >= 0.5;
@@ -127,17 +155,12 @@ function Menu() {
 
       return (
          <div className="menu-container-rating-stars">
-            {/* Full stars */}
             {[...Array(fullStars)].map((_, i) => (
                <span key={`full-${i}`} className="menu-container-star-full">
                   ★
                </span>
             ))}
-
-            {/* Half star if needed */}
             {hasHalfStar && <span className="menu-container-star-half">★</span>}
-
-            {/* Empty stars */}
             {[...Array(emptyStars)].map((_, i) => (
                <span key={`empty-${i}`} className="menu-container-star-empty">
                   ☆
@@ -145,6 +168,12 @@ function Menu() {
             ))}
          </div>
       );
+   };
+
+   const getImageUrl = (imagePath) => {
+      if (!imagePath) return '/assets/img/default-product.jpg';
+      if (imagePath.startsWith('http')) return imagePath;
+      return imagePath.startsWith('/') ? imagePath : `/assets/img/${imagePath}`;
    };
 
    if (loading) {
@@ -167,10 +196,16 @@ function Menu() {
       return <div className="menu-container-error">{error}</div>;
    }
 
-   // Check if products array is empty
    if (products.length === 0) {
-      return <div className="menu-container-no-products">No products found. Please check the database connection.</div>;
+      return (
+         <div className="menu-container-no-products">
+            No products found. Please check the database connection.
+         </div>
+      );
    }
+
+   // Get unique types from products for category filtering
+   const categoryTypes = ['all', ...new Set(products.map((product) => product.type))];
 
    return (
       <div className="menu-container-main">
@@ -185,17 +220,16 @@ function Menu() {
          </header>
 
          <div className="menu-container-layout">
-            {/* Sidebar/Filters */}
             <aside className="menu-container-sidebar">
                <div className="menu-container-filter-box">
                   <h2 className="menu-container-category-title">Categories</h2>
                   <ul className="menu-container-category-list">
-                     {['all', 'coffee', 'matcha', 'milk', 'juice', 'hot'].map((category) => (
+                     {categoryTypes.map((category) => (
                         <li key={category} className="menu-container-category-item">
                            <button
                               onClick={() => {
                                  setSelectedCategory(category);
-                                 setCurrentPage(1); // Reset to first page when changing category
+                                 setCurrentPage(1);
                               }}
                               className={`menu-container-category-button ${
                                  selectedCategory === category
@@ -229,6 +263,8 @@ function Menu() {
                            <input
                               type="number"
                               id="min-price"
+                              value={minPrice}
+                              onChange={(e) => setMinPrice(e.target.value)}
                               className="menu-container-price-input"
                               placeholder="₱0"
                            />
@@ -240,19 +276,24 @@ function Menu() {
                            <input
                               type="number"
                               id="max-price"
+                              value={maxPrice}
+                              onChange={(e) => setMaxPrice(e.target.value)}
                               className="menu-container-price-input"
                               placeholder="₱100"
                            />
                         </div>
-                        <button className="menu-container-price-apply">Apply Filter</button>
+                        <button
+                           className="menu-container-price-apply"
+                           onClick={() => setCurrentPage(1)}
+                        >
+                           Apply Filter
+                        </button>
                      </div>
                   </div>
                </div>
             </aside>
 
-            {/* Main content */}
             <div className="menu-container-content">
-               {/* Sort options */}
                <div className="menu-container-sort-bar">
                   <p className="menu-container-results-count">
                      {sortedProducts.length} drinks found
@@ -266,7 +307,7 @@ function Menu() {
                         value={sortBy}
                         onChange={(e) => {
                            setSortBy(e.target.value);
-                           setCurrentPage(1); // Reset to first page when changing sort
+                           setCurrentPage(1);
                         }}
                         className="menu-container-sort-select"
                      >
@@ -278,48 +319,49 @@ function Menu() {
                   </div>
                </div>
 
-               {/* Products grid */}
                <div className="menu-container-products-grid">
                   {currentProducts.length > 0 ? (
                      currentProducts.map((product) => {
-                        // Check if the item is at max quantity
-                        const isAtMaxQuantity = !canAddToCart(product.id);
-                        // Handle potential image path issues
-                        const imagePath = product.image && product.image.startsWith('/')
-                           ? `/assets/img${product.image}`
-                           : `/assets/img/${product.image}`;
+                        const isAtMaxQuantity = !canAddToCart(product.product_id);
+                        const imagePath = getImageUrl(product.image);
 
                         return (
-                           <div key={product.id} className="menu-container-product-card">
+                           <div key={product.product_id} className="menu-container-product-card">
                               <div className="menu-container-product-image">
                                  <img
                                     src={imagePath}
                                     alt={product.name}
                                     className="menu-container-product-img"
                                     onError={(e) => {
-                                       // Fallback image if the path fails
                                        e.target.src = '/assets/img/default-product.jpg';
                                     }}
                                  />
                               </div>
                               <div className="menu-container-product-details">
                                  <h3 className="menu-container-product-name">{product.name}</h3>
-
-                                 {/* Rating display */}
+                                 {product.size && (
+                                    <div className="menu-container-product-size">
+                                       <span className="menu-container-size-label">Size: </span>
+                                       <span className="menu-container-size-value">
+                                          {product.size}
+                                       </span>
+                                    </div>
+                                 )}
                                  <div className="menu-container-product-rating">
-                                    {product.rating ? (
+                                    {!isNaN(parseFloat(product.rating)) ? (
                                        <>
                                           {renderStarRating(parseFloat(product.rating))}
                                           <span className="menu-container-rating-text">
-                                             {parseFloat(product.rating).toFixed(1)} ({product.review_count || 0}{' '}
-                                             reviews)
+                                             {parseFloat(product.rating).toFixed(1)} (
+                                             {product.review_count || 0} reviews)
                                           </span>
                                        </>
                                     ) : (
-                                       <span className="menu-container-rating-text">No ratings yet</span>
+                                       <span className="menu-container-rating-text">
+                                          No ratings yet
+                                       </span>
                                     )}
                                  </div>
-
                                  <div className="menu-container-product-pricing">
                                     <p className="menu-container-product-price">
                                        ₱{parseFloat(product.price).toFixed(2)}
@@ -335,15 +377,16 @@ function Menu() {
                                  </p>
                                  <div className="menu-container-product-actions">
                                     <Link
-                                       to={`/product/${product.id}`}
+                                       to={`/product/${product.product_id}`}
                                        className="menu-container-view-button"
                                     >
                                        View Details
                                     </Link>
-
                                     <button
                                        className={`menu-container-add-button ${
-                                          isAtMaxQuantity ? 'menu-container-add-button-disabled' : ''
+                                          isAtMaxQuantity
+                                             ? 'menu-container-add-button-disabled'
+                                             : ''
                                        }`}
                                        onClick={() => {
                                           if (isAtMaxQuantity) {
@@ -366,11 +409,12 @@ function Menu() {
                         );
                      })
                   ) : (
-                     <div className="menu-container-no-products">No products found for the selected category.</div>
+                     <div className="menu-container-no-products">
+                        No products found for the selected filters.
+                     </div>
                   )}
                </div>
 
-               {/* Pagination */}
                {totalPages > 0 && (
                   <div className="menu-container-pagination">
                      <nav className="menu-container-pagination-nav">
@@ -386,7 +430,7 @@ function Menu() {
                         {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
                            <button
                               key={page}
-                              onClick={() => setCurrentPage(page)}
+                              onClick={() => handlePageClick(page)}
                               className={`menu-container-pagination-page ${
                                  page === currentPage ? 'menu-container-pagination-active' : ''
                               }`}

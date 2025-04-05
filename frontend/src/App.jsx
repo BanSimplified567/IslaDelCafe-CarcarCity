@@ -1,5 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { createBrowserRouter, Outlet, RouterProvider, useLocation } from 'react-router-dom';
+import CartProvider from './pages/user/CartContext';
+
 
 // Lazy load pages for code splitting
 // User Pages
@@ -200,7 +202,9 @@ export const router = createBrowserRouter([
 function App() {
    return (
       <Suspense fallback={<PageLoader />}>
-         <RouterProvider router={router}></RouterProvider>
+         <CartProvider>
+            <RouterProvider router={router}></RouterProvider>
+            </CartProvider>
       </Suspense>
    );
 }
