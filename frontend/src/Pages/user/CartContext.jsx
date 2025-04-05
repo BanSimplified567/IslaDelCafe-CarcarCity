@@ -1,7 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import Swal from 'sweetalert2';
 
-// Create the Cart Context
 export const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
@@ -10,26 +9,17 @@ export const CartProvider = ({ children }) => {
       return savedCart ? JSON.parse(savedCart) : [];
    });
 
-   const MAX_QUANTITY_PER_ITEM = 5;
-
-   // Persist cart to localStorage whenever it changes
    useEffect(() => {
       localStorage.setItem('coffeeShopCart', JSON.stringify(cartItems));
    }, [cartItems]);
 
-   // Calculate cart totals and item count
    const getCartTotals = () => {
       const subtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
       const shipping = subtotal > 100 ? 0 : 10.99;
       const itemCount = cartItems.reduce((total, item) => total + item.quantity, 0);
       const total = subtotal + shipping;
 
-      return {
-         subtotal,
-         shipping,
-         itemCount,
-         total,
-      };
+      return { subtotal, shipping, itemCount, total };
    };
 
    const addToCart = (product) => {
@@ -46,31 +36,22 @@ export const CartProvider = ({ children }) => {
          type: product.type || '',
       };
 
+      const availableStock = standardizedProduct.stock;
+
       setCartItems((prevItems) => {
          const existingItemIndex = prevItems.findIndex(
-            (item) => item.id === standardizedProduct.id
+            (item) => item.id === standardizedProduct.id && item.size === standardizedProduct.size
          );
 
          if (existingItemIndex >= 0) {
             const currentQuantity = prevItems[existingItemIndex].quantity;
             const requestedQuantity = standardizedProduct.quantity;
-            const availableStock = standardizedProduct.stock;
 
             if (currentQuantity + requestedQuantity > availableStock) {
                Swal.fire({
                   icon: 'warning',
                   title: 'Stock Limit Reached',
-                  text: `Only ${availableStock} items available in stock.`,
-                  confirmButtonColor: '#6b705c',
-               });
-               return prevItems;
-            }
-
-            if (currentQuantity + requestedQuantity > MAX_QUANTITY_PER_ITEM) {
-               Swal.fire({
-                  icon: 'warning',
-                  title: 'Quantity Limit Reached',
-                  text: `Maximum ${MAX_QUANTITY_PER_ITEM} items per product allowed.`,
+                  text: `Only ${availableStock} items available for this size.`,
                   confirmButtonColor: '#6b705c',
                });
                return prevItems;
@@ -84,24 +65,8 @@ export const CartProvider = ({ children }) => {
             return updatedItems;
          }
 
-         if (standardizedProduct.quantity > standardizedProduct.stock) {
-            Swal.fire({
-               icon: 'warning',
-               title: 'Stock Limit Reached',
-               text: `Only ${standardizedProduct.stock} items available in stock.`,
-               confirmButtonColor: '#6b705c',
-            });
-            standardizedProduct.quantity = standardizedProduct.stock;
-         }
-
-         if (standardizedProduct.quantity > MAX_QUANTITY_PER_ITEM) {
-            Swal.fire({
-               icon: 'warning',
-               title: 'Quantity Limit Reached',
-               text: `Maximum ${MAX_QUANTITY_PER_ITEM} items per product allowed.`,
-               confirmButtonColor: '#6b705c',
-            });
-            standardizedProduct.quantity = MAX_QUANTITY_PER_ITEM;
+         if (standardizedProduct.quantity > availableStock) {
+            standardizedProduct.quantity = availableStock;
          }
 
          return [...prevItems, standardizedProduct];
@@ -126,16 +91,6 @@ export const CartProvider = ({ children }) => {
                confirmButtonColor: '#6b705c',
             });
             quantity = item.stock;
-         }
-
-         if (quantity > MAX_QUANTITY_PER_ITEM) {
-            Swal.fire({
-               icon: 'warning',
-               title: 'Quantity Limit Reached',
-               text: `Maximum ${MAX_QUANTITY_PER_ITEM} items per product allowed.`,
-               confirmButtonColor: '#6b705c',
-            });
-            quantity = MAX_QUANTITY_PER_ITEM;
          }
 
          return prevItems.map((item) => (item.id === id ? { ...item, quantity } : item));
@@ -181,7 +136,6 @@ export const CartProvider = ({ children }) => {
             removeItem,
             clearCart,
             getCartTotals,
-            maxQuantityPerItem: MAX_QUANTITY_PER_ITEM,
          }}
       >
          {children}

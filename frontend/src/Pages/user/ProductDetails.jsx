@@ -67,6 +67,10 @@ function ProductDetails() {
       if (!product) return;
 
       const stock = parseInt(product.stock) || 0;
+      const existingItem = cartItems.find(
+         (item) => item.id === parseInt(product.product_id) && item.size === selectedSize
+      );
+      const currentQuantity = existingItem ? existingItem.quantity : 0;
 
       if (stock <= 0) {
          Swal.fire({
@@ -78,11 +82,11 @@ function ProductDetails() {
          return;
       }
 
-      if (quantity > stock) {
+      if (currentQuantity + quantity > stock) {
          Swal.fire({
             icon: 'warning',
             title: 'Stock Limit Reached',
-            text: `Only ${stock} items available in stock.`,
+            text: `Only ${stock - currentQuantity} more items available for this size.`,
             confirmButtonColor: '#6b705c',
          });
          return;
@@ -116,6 +120,10 @@ function ProductDetails() {
       });
 
       setShowViewCart(true);
+
+      if (currentQuantity + quantity >= stock) {
+         navigate('/cart');
+      }
    };
 
    const toggleFavorite = () => {
@@ -251,10 +259,6 @@ function ProductDetails() {
                            <Share2 className="product-details-icon" />
                         </button>
                      </div>
-                  </div>
-
-                  {/* Product Info */}
-                  <div className="product-details-info">
                      <div className="product-details-header">
                         <div>
                            <h1 className="product-details-title">{product.name}</h1>
@@ -294,7 +298,10 @@ function ProductDetails() {
                            {product.description || 'No description available'}
                         </p>
                      </div>
+                  </div>
 
+                  {/* Product Info */}
+                  <div className="product-details-info">
                      <div className="product-details-section">
                         <h2 className="product-details-section-title">Details</h2>
                         <dl className="product-details-specs">
@@ -370,28 +377,8 @@ function ProductDetails() {
                                     onClick={() => handleSizeChange(size)}
                                  >
                                     {size}
-                                    {size !== 'Small' && (
-                                       <span className="product-details-size-price">
-                                          +₱{size === 'Medium' ? '20' : '40'}
-                                       </span>
-                                    )}
                                  </button>
                               ))}
-                           </div>
-                        </div>
-
-                        <div className="product-details-size-counts">
-                           <div className="product-details-size-count">
-                              <span>Small:</span>
-                              <span>{sizeCounts.Small}</span>
-                           </div>
-                           <div className="product-details-size-count">
-                              <span>Medium:</span>
-                              <span>{sizeCounts.Medium}</span>
-                           </div>
-                           <div className="product-details-size-count">
-                              <span>Large:</span>
-                              <span>{sizeCounts.Large}</span>
                            </div>
                         </div>
 
@@ -439,9 +426,7 @@ function ProductDetails() {
                            disabled={stock <= 0}
                         >
                            <ShoppingCart className="product-details-icon" />
-                           {cartItems.some((item) => item.id === parseInt(id))
-                              ? 'Update Cart'
-                              : 'Add to Cart'}
+                           {stock <= 0 ? 'Out of Stock' : 'Add to Cart'}
                         </button>
                      </div>
 

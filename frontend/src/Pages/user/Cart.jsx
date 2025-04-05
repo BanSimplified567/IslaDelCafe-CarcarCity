@@ -76,6 +76,35 @@ function Cart() {
       });
    };
 
+   const handleQuantityChange = (id, size, newQuantity) => {
+      const item = cartItems.find((item) => item.id === id && item.size === size);
+      if (!item) return;
+
+      // Calculate total quantity of this product (all sizes) in cart
+      const totalInCart = cartItems
+         .filter((i) => i.id === id)
+         .reduce((sum, i) => sum + i.quantity, 0);
+
+      // Calculate new total after updating
+      const newTotal = totalInCart - item.quantity + newQuantity;
+
+      // Check if the new quantity would exceed stock
+      if (newTotal > item.stock) {
+         const maxAllowed = item.stock - (totalInCart - item.quantity);
+         Swal.fire({
+            icon: 'warning',
+            title: 'Stock Limit Reached',
+            text: `Only ${maxAllowed} items available. You already have ${
+               totalInCart - item.quantity
+            } in cart.`,
+            confirmButtonColor: '#6b705c',
+         });
+         return;
+      }
+
+      updateQuantity(id, size, newQuantity);
+   };
+
    // If cart is empty, show a message
    if (!cartItems.length) {
       return (
@@ -121,7 +150,6 @@ function Cart() {
                                        alt={item.name}
                                        className="cart-item-image"
                                     />
-
                                  )}
                                  <div className="cart-item-details">
                                     <span className="cart-item-name">{item.name}</span>
@@ -178,7 +206,7 @@ function Cart() {
                            </td>
                            <td>
                               <button
-                                 onClick={() => removeItem(item.id)}
+                                 onClick={() => removeItem(item.id, item.size)}
                                  className="cart-remove"
                                  title="Remove item"
                               >

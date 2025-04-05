@@ -17,6 +17,23 @@ function Menu() {
    const [loading, setLoading] = useState(true);
    const [error, setError] = useState(null);
 
+   const [expandedProductId, setExpandedProductId] = useState(null);
+
+   useEffect(() => {
+      const handleKeyDown = (e) => {
+         if (e.key === 'Escape') {
+            setExpandedProductId(null);
+         }
+      };
+
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+   }, []);
+
+   const toggleProductDetails = (productId) => {
+      setExpandedProductId((prev) => (prev === productId ? null : productId));
+   };
+
    useEffect(() => {
       const fetchProducts = async () => {
          try {
@@ -99,7 +116,7 @@ function Menu() {
 
    const handleAddToCart = useCallback(
       (product) => {
-         const stock = parseInt(product.stock) || 0;
+         const stock = parseInt(product.stock, 10) || 0;
 
          if (stock <= 0) {
             Swal.fire({
@@ -111,26 +128,31 @@ function Menu() {
             return;
          }
 
+         // Find if the product already exists in the cart
          const existingItem = cartItems.find((item) => item.id === product.product_id);
          const currentQuantity = existingItem ? existingItem.quantity : 0;
 
-         if (currentQuantity >= stock) {
+         // Check if adding this item would exceed the stock
+         if (currentQuantity + 1 > stock) {
             Swal.fire({
                icon: 'warning',
                title: 'Stock Limit Reached',
-               text: `Only ${stock} items available in stock.`,
+               text: `You already have ${currentQuantity} in your cart. Only ${
+                  stock - currentQuantity
+               } item(s) available.`,
                confirmButtonColor: '#6b705c',
             });
             return;
          }
 
+         // Add item to the cart
          addToCart({
             id: product.product_id,
             name: product.name,
             price: product.price,
             quantity: 1,
             image: product.image,
-            size: 'Small',
+            size: 'Small', // Update this if dynamic sizing is added later
             stock: stock,
             type: product.type,
          });
@@ -353,7 +375,7 @@ function Menu() {
                                           {renderStarRating(parseFloat(product.rating))}
                                           <span className="menu-container-rating-text">
                                              {parseFloat(product.rating).toFixed(1)} (
-                                             {product.review_count || 0} reviews)
+                                             {product.reviews || 0} reviews)
                                           </span>
                                        </>
                                     ) : (
@@ -376,33 +398,79 @@ function Menu() {
                                     {product.description || 'No description available'}
                                  </p>
                                  <div className="menu-container-product-actions">
-                                    <Link
-                                       to={`/product/${product.product_id}`}
-                                       className="menu-container-view-button"
-                                    >
-                                       View Details
-                                    </Link>
                                     <button
-                                       className={`menu-container-add-button ${
-                                          isAtMaxQuantity
-                                             ? 'menu-container-add-button-disabled'
-                                             : ''
-                                       }`}
-                                       onClick={() => {
-                                          if (isAtMaxQuantity) {
-                                             Swal.fire({
-                                                icon: 'warning',
-                                                title: 'Maximum Limit Reached',
-                                                text: `You have already added ${maxQuantityPerItem} of this item.`,
-                                                confirmButtonColor: '#6b705c',
-                                             });
-                                          } else {
-                                             handleAddToCart(product);
-                                          }
-                                       }}
+                                       className="menu-container-view-button"
+                                       onClick={() => toggleProductDetails(product.product_id)}
                                     >
-                                       {isAtMaxQuantity ? 'Max Limit' : 'Add to Cart'}
+                                       {expandedProductId === product.product_id
+                                          ? 'Hide Details'
+                                          : 'View Details'}
                                     </button>
+                                    {expandedProductId === product.product_id && (
+                                       <div className="menu-overlay">
+                                          <div className="menu-overlay-content">
+                                             <button
+                                                className="menu-overlay-close"
+                                                onClick={() => setExpandedProductId(null)}
+                                             >
+                                                ×
+                                             </button>
+                                             <img
+                                                src={`/assets/img/${product.image}`}
+                                                alt={product.name}
+                                                className="menu-overlay-image"
+                                             />
+                                             <h2>{product.name}</h2>
+                                             <p>
+                                                <strong>Type:</strong> {product.type}
+                                             </p>
+                                             <p>
+                                                <strong>Subtype:</strong> {product.subtype}
+                                             </p>
+                                             <p>
+                                                <strong>Description:</strong> {product.description}
+                                             </p>
+                                             <p>
+                                                <strong>Size:</strong> {product.size}
+                                             </p>
+                                             <p>
+                                                <strong>Temperature:</strong> {product.temperature}
+                                             </p>
+                                             <p>
+                                                <strong>Rating:</strong> {product.rating}
+                                             </p>
+                                             <p>
+                                                <strong>Calories:</strong> {product.calories}
+                                             </p>
+                                             <p>
+                                                <strong>Caffeine Level:</strong>{' '}
+                                                {product.caffeine_level}
+                                             </p>
+                                             <p>
+                                                <strong>Stock:</strong> {product.stock}
+                                             </p>
+                                             <p>
+                                                <strong>Price:</strong> ₱{product.price}
+                                             </p>
+                                          </div>
+                                       </div>
+                                    )}
+
+                                    {isAtMaxQuantity ? (
+                                       <button
+                                          className="menu-container-add-button menu-container-add-button-disabled"
+                                          disabled
+                                       >
+                                          Max Limit
+                                       </button>
+                                    ) : (
+                                       <Link
+                                          to={`/product/${product.product_id}`}
+                                          className="menu-container-add-button"
+                                       >
+                                          Add to Cart
+                                       </Link>
+                                    )}
                                  </div>
                               </div>
                            </div>
